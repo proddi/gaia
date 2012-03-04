@@ -1,19 +1,30 @@
 <?php
-
-error_reporting(error_reporting() ^ E_STRICT);
 require_once('../../../libs/gaia.php');
-GAIA::registerNamespace('../libs/own', 'own');
 
-gaiaServer::run(
-        // mixin console support
-        gaiaLog::consoleSupport(),
-        // a router
-        gaiaServer::router(array(
-                '/hello/:id*' => new ownController(),
-                '*' => function($req, $res) { $res->log(2); }
-            )),
-        // using gaiaView
-        function($req, $res) { $res->send(gaiaView::render('index', array('content' => $res->content(), 'msg' => $res->content('msg')))); }
-    );
+// Configure
+$config = array (
+    'adapter' => 'pdoSqlite',
+    'database' => array(
+        'host' => 'localhost',
+        'dbname' => '../data/sqlite.sqlite',
+        'username' => 'root',
+        'password' => ''
+    )
+);
+
+gaiaDb::setConfig($config);
+
+try {
+    $html = new gaiaResponseHtml();
+
+    $q = gaiaDb::select('SELECT idx, name, age, quote FROM users');
+    $html->send(gaiaView::render('index', array('q' => $q)));
+
+    $q->free();
+
+    $html->streamOut();
+} catch (gaiaDbException $e) {
+    echo "<pre>gaiaDbException: " . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>';
+}
 
 ?>
