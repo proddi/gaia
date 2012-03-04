@@ -1,6 +1,5 @@
 <?php
 
-error_reporting(error_reporting() ^ E_STRICT);
 require_once('../../../libs/gaia.php');
 
 // add exception handler

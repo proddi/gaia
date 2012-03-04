@@ -8,6 +8,10 @@
  * @version 0.1
  */
 
+if (ini_get('register_globals')) die("I dont want run in a unsecure environment!");
+
+error_reporting(error_reporting() ^ E_STRICT);
+
 define ('LF',"<br>\n");
 
 class GAIA {
