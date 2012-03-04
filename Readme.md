@@ -11,7 +11,9 @@
                  $res->send('Hello World!');
              },
              '/admin' => array(
-     //            gaiaServer::requireBasicAuth('admin', 'password'),
+                 gaiaServer::requireBasicAuth(authCallable),
+                 loadUser,
+                 andRestrictTo('admin),
                  function($req, $res) {
                      $res->send('Hello Admin!');
                  }
@@ -21,3 +23,14 @@
              $res->write(gaiaView::render('layout', array('content' => $res->content())));
          }
      );
+
+     function loadUser($req, $res) {
+         // fetch user data from db or session
+         $req->user = (object) array('name' => 'Foo user', 'role' => 'user');
+     }
+
+     function andRestrictTo($role) {
+         return function($req, $res) use ($role) {
+             if ($req->user->role !== $role) throw new Exception('Unauthorized user!');
+         }
+     }
