@@ -1,25 +1,32 @@
 <style>
-table { border: 1px solid blue; width: 100% }
+body, th { font-family: Georgia, Times, serif; font-size: 16px/1.4; }
+div.bubble { padding: 3px; background: #EEE; border-radius: 3px; width: 90%; margin: auto }
+table { width: 100%; border: 1px solid #CACACA; border-radius: 2px; border-spacing: 0 }
+th { background-color: #F0F0F0; border-bottom: 1px solid #D8D8D8; text-shadow: 0 1px 0 white; padding: 3px }
+td { background-color: #F8F8F8; border-bottom: 1px solid #EEE; padding: 3px }
 td.quote { font-style: italic; }
 td.quote:before { content: "\201C"; font-size: 1.5em; }
 td.quote:after  { content: "\201D"; font-size: 1.5em; }
+tr:hover td { background-color: #EAEAEA }
 </style>
 
-<table>
-<tr class="header">
-    <th>Idx</th>
-    <th>Name</th>
-    <th>Age</th>
-    <th>Quote</th>
-</tr>
+<div class="bubble"><table>
+<thead>
+    <tr class="header">
+        <th>Idx</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Quote</th>
+    </tr>
+</thead>
 <tbody>
 <? while(list($v->idx, $v->name, $v->age, $v->quote) = $v->q->fetch(gaiaDb::fetchNum)) { ?>
     <tr>
-    <td class="idx"><%- idx %></td>
-    <td class="name"><%- name %></td>
-    <td class="age"><%- age %></td>
-    <td class="quote"><%- quote %></td>
+        <td class="idx"><%- idx %></td>
+        <td class="name"><%- name %></td>
+        <td class="age"><%- age %></td>
+        <td class="quote"><%- quote %></td>
     </tr>
 <? } ?>
 </tbody>
-</table>
+</table></div>
