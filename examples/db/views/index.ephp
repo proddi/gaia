@@ -1,0 +1,7 @@
+index
+
+<p>message: <%- msg %></p>
+
+<p><%- content %></p>
+
+/index

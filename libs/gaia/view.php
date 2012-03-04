@@ -78,7 +78,7 @@ class gaiaView {
             $content = $config['compiler']($template, $config['source']);
             // this state is cachable
             $v = new gaiaInvokable($args);
-            $v->partial = function($partialName, $partialArgs = NULL) { return ownView::render($partialName, $partialArgs); };
+            $v->partial = function($partialName, $partialArgs = NULL) { return gaiaView::render($partialName, $partialArgs); };
             $filters = $config['filters'];
             ob_start();
             eval('?>' . $content . '<?;');
