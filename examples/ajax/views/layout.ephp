@@ -1,0 +1,5 @@
+<div class="header">
+    <h2>ajax example</h2>
+</div>
+
+<%- res->content('time') %>

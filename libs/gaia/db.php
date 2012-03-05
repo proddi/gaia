@@ -98,6 +98,11 @@ class gaiaDb {
 		$adapter = self::getAdapter();
 		return $adapter->fetchOne($sql);
 	}
+	// select sql, return one value
+	public static function fetchRow($sql) {
+		$adapter = self::getAdapter();
+		return $adapter->fetchRow($sql);
+	}
 	// return a STMI object
 	public static function query($sql) {
 		$adapter = self::getAdapter();

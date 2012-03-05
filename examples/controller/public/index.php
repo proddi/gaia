@@ -8,7 +8,8 @@ gaiaServer::run(
         gaiaLog::consoleSupport(),
         // a router
         gaiaServer::router(array(
-                '/hello/:id*' => new ownController(),
+                '/hello/:id*' => new ownController(), // use instance
+//                '/hello/world/:id*' => gaiaServer::controller('ownController'), // use factory
                 '*' => function($req, $res) { $res->log(2); }
             )),
         // using gaiaView

@@ -1,0 +1,46 @@
+body, th {
+    font-family: 'Ubuntu', 'Philosopher', Georgia, Times, serif;
+    font-size: 16px/1.4;
+}
+.header {
+    background-color: #DADADA;
+}
+.bubble {
+    padding: 3px;
+    background: #EEE;
+    border-radius: 3px;
+    width: 90%;
+    margin: auto
+}
+.bubble table {
+    width: 100%;
+    border: 1px solid #CACACA;
+    border-radius: 2px;
+    border-spacing: 0
+}
+.bubble th {
+    background-color: #F0F0F0;
+    border-bottom: 1px solid #D8D8D8;
+    text-shadow: 0 1px 0 white;
+    padding: 3px
+}
+.bubble td {
+    background-color: #F8F8F8;
+    border-bottom: 1px solid #EEE;
+    padding: 3px
+}
+.bubble td.quote {
+    color: #555;
+}
+.bubble td.quote:before {
+    content: "\201C";
+    font-size: 1.5em;
+}
+.bubble td.quote:after {
+    content: "\201D";
+    font-size: 1.5em;
+}
+.bubble tr:hover td {
+    background-color: #EAEAEA
+}
+

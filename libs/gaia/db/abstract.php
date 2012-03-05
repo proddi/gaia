@@ -13,7 +13,7 @@
  */
 abstract class gaiaDbAbstract {
 	protected $_config;
-	protected $_fetchMode = gaiaDb::fetchNamed;
+	public $fetchMode = gaiaDb::fetchNamed;
 	protected $_queriesCount = 0;
 	protected $_queriesTime = 0;
 	/**
@@ -62,6 +62,12 @@ abstract class gaiaDbAbstract {
 //		if ($query->eof) return null;
 		list($value) = $query->fetch();
 		return $value;
+	}
+	public function fetchRow($statement) {
+		$query = $this->select($statement);
+//		var_dump($query);
+//		if ($query->eof) return null;
+		return $query->fetch();
 	}
 	public function prepare($statement) {
 		if (!$this->_isOpen) $this->open();

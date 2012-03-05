@@ -46,10 +46,10 @@ class gaiaResponseHtml extends gaiaResponseAbstract {
         echo '<head>' . $lf;
         echo '  <title>' . $this->_title . '</title>' . $lf;
         echo '  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />' . $lf;
-//        if (is_array($this->_jsHeader)) foreach ($this->_jsHeader as $js) echo '  <script type="text/javascript" src="'.$js.'"></script>'.$lf;
+        if (array_key_exists($this::jsHeader, $this->_resources))
+            foreach ($this->_resources[$this::jsHeader] as $js) echo '  <script type="text/javascript" src="' . $js . '"></script>' . $lf;
         if (array_key_exists($this::cssHeader, $this->_resources))
             foreach ($this->_resources[$this::cssHeader] as $css) echo '  <link rel="stylesheet" href="' . $css . '" media="Screen,Projection,TV" />' . $lf;
-//            echo '  <link rel="stylesheet" type="text/css" media="screen" href="https://no.de/stylesheets/application.css" />' . $lf;
         echo '</head>' . $lf;
         echo '<body>' . $lf;
         echo $this->content() . $lf;

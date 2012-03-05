@@ -1,0 +1,20 @@
+<div class="bubble"><table>
+<thead>
+    <tr class="header">
+        <th>Idx</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Quote</th>
+    </tr>
+</thead>
+<tbody>
+<? foreach ($v->users as $user) { ?>
+    <tr>
+        <td class="idx"><? echo '<a href="'.$v->baseUri.'user/'.$user->idx.'">'.$user->idx.'</a>' ?></td>
+        <td class="name"><? echo '<a href="'.$v->baseUri.'query/user?q='.$user->name.'">'.$user->name.'</a>' ?></td>
+        <td class="age"><? echo $user->age ?></td>
+        <td class="quote"><? echo $user->quote ?></td>
+    </tr>
+<? } ?>
+</tbody>
+</table></div>

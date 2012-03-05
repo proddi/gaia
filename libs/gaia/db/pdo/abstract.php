@@ -104,7 +104,7 @@ class gaiaDbPdoQuery extends gaiaDbQueryAbstract {
 	public function fetch($fetchMode = null) {
 //		if ($this->eof) return false;
 		$this->_currPos++;
-		switch (isset($fetchMode) ? $fetchMode : $this->Db->fetchMode) {
+		switch (isset($fetchMode) ? $fetchMode : $this->_Db->fetchMode) {
 //			case gaiaDb::fetchAssoc:	return mysqli_fetch_assoc($this->__queryResult); break;
 //			case gaiaDb::fetchObj:		return mysqli_fetch_object($this->__queryResult); break;
 			case gaiaDb::fetchArray:	if (!$result = $this->__queryResult->fetch(PDO::FETCH_ASSOC)) return false;
@@ -178,7 +178,7 @@ class gaiaDbPdoStatement extends gaiaDbStatementAbstract {
 
 	public function fetch($fetchMode = null) {
 		$this->_currPos++;
-		switch (isset($fetchMode) ? $fetchMode : $this->Db->fetchMode) {
+		switch (isset($fetchMode) ? $fetchMode : $this->_Db->fetchMode) {
 //			case gaiaDb::fetchAssoc:	return mysqli_fetch_assoc($this->__queryResult); break;
 //			case gaiaDb::fetchObj:		return mysqli_fetch_object($this->__queryResult); break;
 			case gaiaDb::fetchArray:	if (!$result = $this->__stmt->fetch(PDO::FETCH_ASSOC)) return false;

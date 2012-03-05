@@ -15,14 +15,11 @@ $config = array (
 gaiaDb::setConfig($config);
 
 try {
-    $html = new gaiaResponseHtml();
-
-    $q = gaiaDb::select('SELECT idx, name, age, quote FROM users');
-    $html->send(gaiaView::render('index', array('q' => $q)));
-
+    $q = gaiaDb::select('SELECT idx, name FROM users');
+    while(list($idx, $name) = $q->fetch(gaiaDb::fetchNum)) {
+        echo '<li>'.$name.'</li>';
+    }
     $q->free();
-
-    $html->streamOut();
 } catch (gaiaDbException $e) {
     echo "<pre>gaiaDbException: " . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>';
 }

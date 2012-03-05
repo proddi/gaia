@@ -1,0 +1,12 @@
+<link href='http://fonts.googleapis.com/css?family=Philosopher' rel='stylesheet' type='text/css'>
+
+<div class="header">
+    <h2>gaiaModel example</h2>
+</div>
+
+<%- res->content() %>
+
+<ul>
+<li><a href="<%- baseUri %>">All users</a>
+<li><a href="<%- baseUri %>query/user?q=one">Search for 'one'</a>
+</ul>

@@ -9,10 +9,13 @@ abstract class gaiaResponseAbstract extends gaiaInvokable {
 
     protected $_title;
     protected $_resources = array();
-
     protected $_isFinish = false;
-
     protected $_content = array();
+
+    public function __construct(gaiaResponseAbstract $res = NULL) {
+        if ($res) $this->_content = $res->allContent();
+    }
+
     public function header() {}
 
     public function send($ctx, $data = NULL) {
@@ -25,8 +28,8 @@ abstract class gaiaResponseAbstract extends gaiaInvokable {
         return $this;
     }
 
-    public function finish($data = '') {
-        $this->send($data);
+    public function finish($ctx, $data = NULL) {
+        $this->send($ctx, $data);
         $this->_isFinish = true;
         return $this;
     }
@@ -44,11 +47,17 @@ abstract class gaiaResponseAbstract extends gaiaInvokable {
         return $data;
     }
 
+    public function allContent() {
+        $data = $this->_content;
+        unset($this->_content);
+        return $data;
+    }
+
     public function resource($resource, $type = NULL) {
         if (!$type) {
-            if (".js" === substr($resource, -3)) $type = 'js.header';
-            else if (".css" === substr($resource, -4)) $type = 'css.header';
-            else $type = 'js.inline';
+            if ('.js' === substr($resource, -3)) $type = self::jsHeader;
+            else if ('.css' === substr($resource, -4)) $type = self::cssHeader;
+            else $type = self::jsInline;
         }
         if (!array_key_exists($type, $this->_resources)) {
             $this->_resources[$type] = array();
