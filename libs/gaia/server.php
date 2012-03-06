@@ -154,10 +154,25 @@ class gaiaServer {
 
     //------------------------------------------------------------------------------------------------------------------
     static public function tryCatch(/* args..., exceptionHandler */) {
-        $mw = array_slice(func_get_args(),0, -1);
+        $mw = array_slice(func_get_args(), 0, -1);
         $exceptionHandler = func_get_arg(func_num_args()-1);
         return function(&$req, &$res, $data) use ($mw, $exceptionHandler) {
             return gaiaServer::_executeMiddleware($mw, $req, $res, $data, $exceptionHandler);
+        };
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    static public function ajax($ctx, $mw, $finish = false) {
+        return function(&$req, &$res, $data) use ($ctx, $mw, $finish) {
+            if ($req->isAjax()) {
+                if (!$res instanceof gaiaResponseAjax) $res = new gaiaResponseAjax($res);
+                $data = gaiaServer::_proceedMiddleware($mw, $req, $res, $data);
+                if ($finish) $res->finish();
+            } else {
+                $data = gaiaServer::_proceedMiddleware($mw, $req, $res, $data);
+                $res->send($ctx, '<span id="ajax_'.$ctx.'">' . $res->content($ctx) . '</span>');
+            }
+            return $data;
         };
     }
 

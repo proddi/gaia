@@ -2,4 +2,8 @@
     <h2>ajax example</h2>
 </div>
 
-<%- res->content('time') %>
+<div style="width: 40%; margin: auto; background-color: #EEE; border: 3px solid #CCC; text-align: center">
+    <%- res->content('time') %>
+</div>
+
+Some random quote: <i><%- res->content('quote') %></i>

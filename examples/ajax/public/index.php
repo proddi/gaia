@@ -2,17 +2,22 @@
 
 require_once('../../../libs/gaia.php');
 
+$quotes = array('When Life Gives You Questions, Google has Answers',
+                '1f u c4n r34d th1s u r34lly n33d t0 g37 l41d',
+                'If at first you don\'t succeed; call it version 1.0',
+                'The glass is neither half-full nor half-empty: it\'s twice as big as it needs to be.',
+                'I would love to change the world, but they won\'t give me the source code');
+
 gaiaServer::run(
+
     // render time
-    function($req, &$res) {
-        $cnt = gaiaView::render('time', array('current' => date("r")));
-        if ($req->isAjax()) {
-            $res = new gaiaResponseAjax($res);
-            return $res->finish('time', $cnt);
-        }
-        $cnt = '<div id="ajax_time" style="width: 40%; margin: auto; background-color: #EEE; border: 3px solid #CCC; text-align: center">' . $cnt . '</div>';
-        $res->send('time', $cnt);
-    },
+    gaiaServer::ajax('time', function($req, $res) {
+        $res->send('time', date('l jS \of F Y h:i:s'));
+    }),
+
+    gaiaServer::ajax('quote', function($req, $res) use ($quotes) {
+        $res->send('quote', $quotes[time() / 3 % 5]);
+    }, true),
 
     // apply layout
     function($req, &$res) {

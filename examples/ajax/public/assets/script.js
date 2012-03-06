@@ -5,15 +5,19 @@ setInterval(function(){
         context: document.body,
         success: proceedResponse
     });
-}, 5000);
+}, 500);
 
 function proceedResponse(data) {
     var content = data.content || {};
-    console.log(content);
     for (var key in content) {
-        console.log("#ajax_"+key, content[key]);
-        $("#ajax_"+key).fadeOut(100, function() {
-            $(this).html(content[key]);
-        }).fadeIn(200);
+        var cnt = content[key];
+        flashEffect($("#ajax_"+key), content[key]);
     }
+}
+
+function flashEffect(node, content) {
+    if (node.html() == content) return;
+    node.fadeOut(100, function() {
+        $(this).html(content);
+    }).fadeIn(200);
 }

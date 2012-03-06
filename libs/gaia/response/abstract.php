@@ -28,8 +28,8 @@ abstract class gaiaResponseAbstract extends gaiaInvokable {
         return $this;
     }
 
-    public function finish($ctx, $data = NULL) {
-        $this->send($ctx, $data);
+    public function finish($ctx = NULL, $data = NULL) {
+        if (isset($ctx)) $this->send($ctx, $data);
         $this->_isFinish = true;
         return $this;
     }
