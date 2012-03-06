@@ -176,6 +176,24 @@ class gaiaServer {
         };
     }
 
+    static public function requireBasicAuth($validator /* mw, mw, ... */) {
+        $mw = array_slice(func_get_args(), 1);
+
+        return function(&$req, &$res, $data) use ($validator, $mw) {
+            $authenticated = false;
+
+            if (isset($_SERVER['PHP_AUTH_USER'])) $authenticated = $validator($req, $res, $data, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+            else $validator($req, $res, $data, NULL, NULL); // get default values
+
+            if (!$authenticated) {
+                header('WWW-Authenticate: Basic realm="Please enter your credentials..."');
+                header('HTTP/1.0 401 Unauthorized');
+            } else {
+                return gaiaServer::_executeMiddleware($mw, $req, $res, $data);
+            }
+        };
+    }
+
     static protected function _routerPreparePath($path) {
         $path = str_replace('/', '\/', $path);
         $path = preg_replace('/\:(\w+)/', '(?P<$1>\w+)', $path);

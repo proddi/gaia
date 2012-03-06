@@ -1,0 +1,7 @@
+<div class="header">
+    <h2>auth example</h2>
+</div>
+
+<pre>
+<%- res->content() %>
+</pre>
