@@ -13,7 +13,7 @@
              '/admin' => array(
                  gaiaServer::requireBasicAuth(authCallable),
                  loadUser,
-                 andRestrictTo('admin),
+                 andRestrictTo('admin'),
                  function($req, $res) {
                      $res->send('Hello Admin!');
                  }
@@ -26,11 +26,14 @@
 
      function loadUser($req, $res) {
          // fetch user data from db or session
-         $req->user = (object) array('name' => 'Foo user', 'role' => 'user');
+         $req->user = (object) array(
+             'name' => 'Foo user',
+             'role' => 'user'
+         );
      }
 
      function andRestrictTo($role) {
          return function($req, $res) use ($role) {
-             if ($req->user->role !== $role) throw new Exception('Unauthorized user!');
+             if ($req->user->role !== $role) return gaiaServer::BREAKCHAIN;
          }
      }
