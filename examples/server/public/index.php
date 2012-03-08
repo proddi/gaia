@@ -29,8 +29,11 @@ gaiaServer::run(
         array(
                 function($req, $res) { $res->log(4.1); },
                 function($req, $res) { $res->log(4.2); },
-                function($req, $res) { $res->log(4.3); }
+                // breaking chain of middlewares
+                function($req, $res) { $res->log(4.3); return gaiaServer::BREAKCHAIN; },
+                function($req, $res) { $res->log(4.4, 'I will never execute.'); }
             ),
+
         // using gaiaView
         function($req, $res) { $res->send(gaiaView::render('index')); }
     );

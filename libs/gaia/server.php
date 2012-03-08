@@ -2,6 +2,8 @@
 
 class gaiaServer {
 
+    const BREAKCHAIN = 'break';
+
     //------------------------------------------------------------------------------------------------------------------
     static protected $_instance;
     static public function getInstance() {
@@ -22,81 +24,17 @@ class gaiaServer {
     }
 
     //------------------------------------------------------------------------------------------------------------------
-
-
-//    protected $_routes = array();
-
-//    public function __construct(array $routes = array()) {
-//    }
-/*
-    public function add($path, $handler = NULL) {
-        if (is_array($path)) {
-            foreach ($path as $path => $handler) {
-                $this->add($path, $handler);
-            }
-        } else {
-            $this->_routes[$this->_preparePath($path)] = $handler;
-        }
-    }
-
-    public function run($req, &$res, $data) {
-        $uri = $req->getUri();
-        foreach ($this->_routes as $route => $handler) {
-            if (preg_match($route, $uri, $matches)) {
-                $req->setUri(array_key_exists('_uri', $matches) ? $matches['_uri'] : '');
-                $req->params = (object) $matches;
-                $data = $this->_proceedHandler($handler, $req, $res, $data);
-                break;
-            }
-        }
-        $req->setUri($uri);
-        return $data;
-    }
-
-    protected function _proceedHandler($handler, $req, &$res, $data) {
-        if (is_array($handler)) {
-            foreach ($handler as $oneHandler) {
-                $data = $oneHandler($req, $res, $data);
-                if ($res->isFinish()) break;
-            }
-        } else {
-            $data = $handler($req, $res, $data);
-        }
-        return $data;
-    }
-
-    protected function _preparePath($path) {
-        $path = str_replace('/', '\/', $path);
-        $path = preg_replace('/\:(\w+)/', '(?P<$1>\w+)', $path);
-//        $path = str_replace('+', '(?P<_uri>.+)', $path);
-        $path = str_replace('*', '(?P<_uri>.*)', $path);
-        $path = '/^' . $path . '$/';
-        return $path;
-    }
-
-    /**
-     * STATIC experimental
-     * @param type $chain
-     * @return type
-     * /
-    static public function create(array $routes) {
-        $router = new self($routes);
-        return function($req, &$res, $data) use ($router) {
-            return $router->run($req, $res, $data);
-        };
-    }
-*/
-
     public function _executeMiddleware(array $middleware, gaiaRequestAbstract &$req, gaiaResponseAbstract &$res, $data = NULL, &$exceptionHandler = NULL) {
         try {
             foreach ($middleware as $mw) {
-                $data = self::_proceedMiddleware($mw, $req, $res, $data);
-                if ($res->isFinish()) break;
+                if (gaiaServer::BREAKCHAIN === self::_proceedMiddleware($mw, $req, $res, $data)
+                        || $res->isFinish()) {
+                    break;
+                }
             }
         } catch (Exception $e) {
             if (is_callable($exceptionHandler)) $data = $exceptionHandler($req, $res, $e, $data);
         }
-        return $data;
     }
 
     /**
@@ -108,15 +46,11 @@ class gaiaServer {
      * @param variant $data Data passed from the previous middleware
      * @return variant Data to pass to the next middleware
      */
-    static public function _proceedMiddleware($handler, gaiaRequestAbstract &$req, gaiaResponseAbstract &$res, $data) {
-        if (is_array($handler)) {
-            foreach ($handler as $mw) {
-                $data = self::_proceedMiddleware ($mw, $req, $res, $data);
-                if ($res->isFinish()) break;
-            }
-            return $data;
+    static public function _proceedMiddleware($mw, gaiaRequestAbstract &$req, gaiaResponseAbstract &$res, $data) {
+        if (is_array($mw)) {
+            return self::_executeMiddleware($mw, $req, $res, $data);
         }
-        return $handler($req, $res, $data);
+        return $mw($req, $res, $data);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -137,18 +71,18 @@ class gaiaServer {
         foreach ($routes as $route => $mw) {
             $_routes[self::_routerPreparePath($route)] = $mw;
         }
-        return function(&$req, &$res, $data) use ($_routes) {
+        return function(&$req, &$res, &$data) use ($_routes) {
             $uri = $req->getUri();
+            $oldParams = isset($req->params) ? (array) $req->params : array();
             foreach ($_routes as $route => $mw) {
                 if (preg_match($route, $uri, $matches)) {
                     $req->setUri(array_key_exists('_uri', $matches) ? $matches['_uri'] : '');
-                    $req->params = (object) $matches;
-                    $data = gaiaServer::_proceedMiddleware($mw, $req, $res, $data);
+                    $req->params = (object) array_merge($oldParams, $matches);
+                    gaiaServer::_proceedMiddleware($mw, $req, $res, $data);
                     break;
                 }
             }
             $req->setUri($uri);
-            return $data;
         };
     }
 
@@ -156,30 +90,30 @@ class gaiaServer {
     static public function tryCatch(/* args..., exceptionHandler */) {
         $mw = array_slice(func_get_args(), 0, -1);
         $exceptionHandler = func_get_arg(func_num_args()-1);
-        return function(&$req, &$res, $data) use ($mw, $exceptionHandler) {
-            return gaiaServer::_executeMiddleware($mw, $req, $res, $data, $exceptionHandler);
+        return function(&$req, &$res, &$data) use ($mw, $exceptionHandler) {
+            gaiaServer::_executeMiddleware($mw, $req, $res, $data, $exceptionHandler);
         };
     }
 
     //------------------------------------------------------------------------------------------------------------------
     static public function ajax($ctx, $mw, $finish = false) {
-        return function(&$req, &$res, $data) use ($ctx, $mw, $finish) {
+        return function(&$req, &$res, &$data) use ($ctx, $mw, $finish) {
             if ($req->isAjax()) {
                 if (!$res instanceof gaiaResponseAjax) $res = new gaiaResponseAjax($res);
-                $data = gaiaServer::_proceedMiddleware($mw, $req, $res, $data);
+                gaiaServer::_proceedMiddleware($mw, $req, $res, $data);
                 if ($finish) $res->finish();
             } else {
-                $data = gaiaServer::_proceedMiddleware($mw, $req, $res, $data);
+                gaiaServer::_proceedMiddleware($mw, $req, $res, $data);
                 $res->send($ctx, '<span id="ajax_'.$ctx.'">' . $res->content($ctx) . '</span>');
             }
-            return $data;
         };
     }
 
+    //------------------------------------------------------------------------------------------------------------------
     static public function requireBasicAuth($validator /* mw, mw, ... */) {
         $mw = array_slice(func_get_args(), 1);
 
-        return function(&$req, &$res, $data) use ($validator, $mw) {
+        return function(&$req, &$res, &$data) use ($validator, $mw) {
             $authenticated = false;
 
             if (isset($_SERVER['PHP_AUTH_USER'])) $authenticated = $validator($req, $res, $data, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
@@ -189,7 +123,7 @@ class gaiaServer {
                 header('WWW-Authenticate: Basic realm="Please enter your credentials..."');
                 header('HTTP/1.0 401 Unauthorized');
             } else {
-                return gaiaServer::_executeMiddleware($mw, $req, $res, $data);
+                gaiaServer::_executeMiddleware($mw, $req, $res, $data);
             }
         };
     }
