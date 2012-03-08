@@ -1,6 +1,6 @@
 # Gaia
 
-  Small and flexible PHP web development framework for professional projects.
+  Small and powerful PHP web development framework for professional projects.
   Easy to understand, easy to extend.
 
      require_once('../../libs/gaia.php');
