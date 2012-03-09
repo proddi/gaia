@@ -30,11 +30,12 @@ abstract class gaiaModelAbstract {
 		if (method_exists($this, $getter)) return ($this->$getter());
 
 		// check for private props
-		if (property_exists($this, $name)) {
-			if (!$this->__loaded && !isset($this->$name)) {
+        $propName = '_' . $name;
+		if (property_exists($this, $propName)) {
+			if (!$this->__loaded && !isset($this->$propName)) {
 				$this->__loaded = $this->__load($name);
 			}
-			return $this->$name;
+			return $this->$propName;
 		}
 		throw new gaiaException('gaiaModel.getter: Property not found. / ' . get_class($this) . '::' . $name);
 	}
@@ -52,8 +53,9 @@ abstract class gaiaModelAbstract {
 		if (method_exists($this, $setter)) return $this->$setter($value);
 
 		// check for private props
-		if (property_exists($this, $name)) {
-			$this->$name = $value;
+        $propName = '_' . $name;
+		if (property_exists($this, $propName)) {
+			$this->$propName = $value;
 		} else {
 			throw new gaiaException('gaiaModel.setter: Property not found. / ' . get_class($this) . '::' . $name);
 		}

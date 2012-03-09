@@ -7,10 +7,10 @@ class exampleUser extends gaiaModelAbstract {
 
     protected $__type;
 
-    protected $idx;
-    protected $name;
-    protected $age;
-    protected $quote;
+    protected $_idx;
+    protected $_name;
+    protected $_age;
+    protected $_quote;
 
     public function __construct($uid=null, $type=self::INDEX) {
         $this->uid = $uid;
