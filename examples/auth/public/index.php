@@ -2,12 +2,6 @@
 
 require_once('../../../libs/gaia.php');
 
-$quotes = array('When Life Gives You Questions, Google has Answers',
-                '1f u c4n r34d th1s u r34lly n33d t0 g37 l41d',
-                'If at first you don\'t succeed; call it version 1.0',
-                'The glass is neither half-full nor half-empty: it\'s twice as big as it needs to be.',
-                'I would love to change the world, but they won\'t give me the source code');
-
 $validateUser = function(&$req, &$res, $data, $user, $pass) {
 //    unset($_SESSION['user']);
     if (isset($_SESSION['user']) && $_SESSION['user']->authenticated) {

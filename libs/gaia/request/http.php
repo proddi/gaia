@@ -17,6 +17,9 @@ class gaiaRequestHttp extends gaiaRequestAbstract {
         $this->_uri = array_key_exists('PATH_INFO', $_SERVER) ? $_SERVER['PATH_INFO'] : '';
     }
 
+    public function isPost() {
+        return 'POST' === $_SERVER['REQUEST_METHOD'];
+    }
     public function method() {
         return $_SERVER['REQUEST_METHOD'];
     }

@@ -1,0 +1,10 @@
+<div class="pageheader">
+    <div style="float: right">
+        <%- user->name %> (<a href="<%- baseUri %>logout">logout</a>)
+    </div>
+    <h2>auth example for user: <%- user->name %></h2>
+</div>
+
+<pre>
+<%- res->content() %>
+</pre>
