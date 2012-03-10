@@ -5,7 +5,7 @@
     <form action="<%- baseUri %>login" method="post">
     <label for="login_field">
         Login or Email<br />
-        <input autocapitalize="off" class="text" id="login_field" name="login" style="width: 15em;" tabindex="1" type="text" />
+        <input autocapitalize="off" class="text" id="login_field" name="login" style="width: 15em;" tabindex="1" type="text" value="<%- login %>" />
     </label>
     <label for="password">
         Password <a href="/sessions/forgot_password">(forgot password)</a>

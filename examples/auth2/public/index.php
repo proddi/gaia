@@ -13,9 +13,13 @@ $validateUser = function($login, $pass, &$user) {
 
 function requireUser($validationFun, array $options = NULL) {
     return function(&$req, &$res, &$data) use ($validationFun) {
+        session_start();
+
         if ('/logout' === $req->getUri()) {
             unset($_SESSION['authenticated']);
             unset($_SESSION['user']);
+            $res = new gaiaResponseRedirect($req->getBaseUri());
+            return;
         }
         $error = '';
         // is already authenticated ?
@@ -23,7 +27,7 @@ function requireUser($validationFun, array $options = NULL) {
             $req->user = $_SESSION['user'];
             return;
         }
-
+        // is login request ?
         if ($req->isPost() && '/login' === $req->getUri() && $_POST['login']) {
             // todo: validation
             $user = NULL;
@@ -32,30 +36,40 @@ function requireUser($validationFun, array $options = NULL) {
                 $_SESSION['user'] = $req->user = $user;
                 $_SESSION['authenticated'] = true;
                 $res = new gaiaResponseRedirect($req->getBaseUri());
-                // TODO: redirect to $req->getBaseUri();
                 return;
             }
         }
 
-        $res->finish(gaiaView::render('login', array(
+        $res->send(gaiaView::render('login', array(
             'baseUri' => $req->getBaseUri(),
-            'login' => $_POST['login'],
+            'login' => isset($_POST['login']) ? $_POST['login'] : '',
             'error' => $error
         )));
+        return gaiaServer::BREAKCHAIN;
     };
 }
 
-session_start();
-
 gaiaServer::run(
-    requireUser($validateUser),
+    array(
+        // this chain needs a valid user
 
-    // apply layout
+        // show a login form if user hasn't logged in
+        requireUser($validateUser),
+
+        // now a user has logged in and ($req->user) is available (see $validateUser function)
+        function($req, $res) {
+            $res->send('Valid user area (' . $req->user->name . ')');
+        }
+    ),
+
+    // layout is for every request
     function($req, &$res) {
         $res->resource('assets/style.css');
+
         $res->send(gaiaView::render('layout', array(
             'baseUri' => $req->getBaseUri(),
-                'user' => $req->user,
+            'authorized' => !empty($req->user),
+            'user' => isset($req->user) ? $req->user : null,
             'res' => $res
         )));
     }
