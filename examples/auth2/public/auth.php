@@ -27,8 +27,6 @@ function requireUser($validationFun, array $options = NULL) {
         }
         // is login request ?
         if ($req->isPost() && '/login' === $req->getUri() && $_POST['login']) {
-            // todo: validation
-            $user = NULL;
             $error = $validationFun($_POST['login'], $_POST['password'], $user);
             if (!$error) {
                 $_SESSION['user'] = $req->user = $user;

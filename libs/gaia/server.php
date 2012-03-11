@@ -24,7 +24,7 @@ class gaiaServer {
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    public function _executeMiddleware(array $middleware, gaiaRequestAbstract &$req, gaiaResponseAbstract &$res, $data = NULL, &$exceptionHandler = NULL) {
+    public function _executeMiddleware(array $middleware, gaiaRequestAbstract &$req, gaiaResponseAbstract &$res, &$data = NULL, &$exceptionHandler = NULL) {
         try {
             foreach ($middleware as $mw) {
                 if (gaiaServer::BREAKCHAIN === self::_proceedMiddleware($mw, $req, $res, $data)
@@ -46,7 +46,7 @@ class gaiaServer {
      * @param variant $data Data passed from the previous middleware
      * @return variant Data to pass to the next middleware
      */
-    static public function _proceedMiddleware($mw, gaiaRequestAbstract &$req, gaiaResponseAbstract &$res, $data) {
+    static public function _proceedMiddleware($mw, gaiaRequestAbstract &$req, gaiaResponseAbstract &$res, &$data) {
         if (is_array($mw)) {
             return self::_executeMiddleware($mw, $req, $res, $data);
         }
@@ -58,7 +58,7 @@ class gaiaServer {
         if (isset($this) && $this instanceof self) {
             $req = new gaiaRequestHttp();
             $res = new gaiaResponseHtml();
-            $this->_executeMiddleware(func_get_args(), $req, $res, NULL, $this->_exceptionHandler);
+            $this->_executeMiddleware(func_get_args(), $req, $res, new gaiaInvokable(), $this->_exceptionHandler);
             $res->streamOut();
         } else {
             return call_user_func_array(array(self::getInstance(), 'run'), func_get_args());
