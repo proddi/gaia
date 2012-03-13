@@ -315,22 +315,6 @@ class gaiaEventHandler {
 //};
 
 /**
- * some missed functions
- */
-if (false === function_exists('lcfirst')) {
-/**
-     * Make a string's first character lowercase
-     *
-     * @param string $str
-     * @return string the resulting string.
-     */
-    function lcfirst( $str ) {
-        $str[0] = strtolower($str[0]);
-        return (string)$str;
-    }
-}
-
-/**
  * Implement the getmicrotime function if the system does not provide it.
  * @return float Time in microseconds
  */
