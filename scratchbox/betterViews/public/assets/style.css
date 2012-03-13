@@ -1,0 +1,22 @@
+body {
+    font: 1em Georgia, "Times New Roman", serif;
+    color: #626262;
+    text-align: left;
+}
+
+h2 { // reset
+    font-size: 100%;
+    font-weight: normal;
+}
+
+h2 {
+  font: 1em Georgia, "Times New Roman", serif;
+  color: #006F9F;
+  margin-bottom: 5px;
+  padding: 15px 0 10px 0;
+  font-size: 1.4em;
+}
+
+.content {
+    margin: 10px 100px 50px 150px;
+}

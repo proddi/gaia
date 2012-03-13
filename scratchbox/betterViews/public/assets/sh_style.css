@@ -1,0 +1,40 @@
+pre.sh_sourceCode {
+    background-color: #232125;
+    line-height: 1.3em;
+    color: #aa9;
+    font-size: 14px;
+    padding: .7em;
+}
+
+pre.sh_sourceCode .sh_comment {
+    color: #B729D9;
+    font-style: italic;
+}
+
+pre.sh_sourceCode .sh_yate_code {
+    color: #A0D0F0;
+}
+
+pre.sh_sourceCode .sh_keyword {
+    color: #FF8400;
+}
+
+pre.sh_sourceCode .sh_symbol {
+    color: #E0882F;
+}
+
+pre.sh_sourceCode .sh_function {
+    color: red;
+}
+pre.sh_sourceCode .sh_string {
+    color: #56DB3A;
+}
+pre.sh_sourceCode .sh_identifier {
+    color: white;
+}
+pre.sh_sourceCode .sh_number {
+    color: #1299DA;
+}
+pre.sh_sourceCode .sh_symbol {
+}
+
