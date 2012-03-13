@@ -23,12 +23,12 @@ if (! this.sh_languages) {
 sh_languages['yate'] = [
   [
     [
-        /{{# /g,
+        /{# /g,
         'sh_comment',
         1
     ],
     [
-        /{{\S? /g,
+        /{{ /g,
         'sh_yate_code',
         2
     ]
@@ -46,7 +46,7 @@ sh_languages['yate'] = [
   ],
   [ // #1 inside a {{# block
     [
-        /}}/g,
+        /#}/g,
         null,
         -2
     ],
@@ -56,7 +56,7 @@ sh_languages['yate'] = [
 
     // is it a keyword?
     [
-        /\b(?:for|in|if|end)\b/gi,
+        /\b(?:for|in|if|end|else|do)\b/gi,
         'sh_keyword',
         -1
     ],
@@ -96,7 +96,7 @@ sh_languages['yate'] = [
 
     // end of yate ?
     [
-        /}}/g,
+        /[%}]}/g,
         null,
         -2
     ],

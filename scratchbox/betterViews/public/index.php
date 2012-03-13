@@ -25,17 +25,17 @@ $docs = array(
     (object) array(
         'title' =>       'Control Structures',
         'description' => '...',
-        'code' =>        '<h1>Members</h1>' . "\n" . '<ul>' . "\n" . '    {{! for user in users }}' . "\n" . '        <li>{{ user->username | escape }}</li>' . "\n" . '    {{! end }}' . "\n" . '</ul>'
+        'code' =>        '<h1>Members</h1>' . "\n" . '<ul>' . "\n" . '    {{ for user in users }}' . "\n" . '        <li>{{ user->username | escape }}</li>' . "\n" . '    {{ end }}' . "\n" . '</ul>'
     ),
     (object) array(
         'title' =>       'Conditions',
         'description' => '...',
-        'code' =>        "{{! if foo->bar }}\n    foo->bar is true\n{{! else }}\n    foo->bar is false\n{{! end }}"
+        'code' =>        "{{ if foo->bar }}\n    foo->bar is true\n{{ else }}\n    foo->bar is false\n{{ end }}"
     ),
     (object) array(
         'title' =>       'Comments',
         'description' => '...',
-        'code' =>        '{{# note: disabled template because we no longer use this }}'
+        'code' =>        "{# todo: the developer have to implement this data field\n    {{ user->name }} \n #}"
     )
 );
 
@@ -54,7 +54,7 @@ $view->config(array(
 
 gaiaServer::run(
     function($req, $res) use($view, $docs) {
-//        $res->send(highlight_string($view->compile('overview', false), true));
+        $res->send(highlight_string($view->compile('overview', false), true));
         $res->send($view->render('overview', array(
             'foo' => array('bar','foo'),
             'docs' => $docs
@@ -62,9 +62,8 @@ gaiaServer::run(
     },
     function($req, $res) {
         $res->resource('assets/style.css');
-        $res->resource('http://shjs.sourceforge.net/sh_main.js');
+        $res->resource('assets/sh_main.js');
         $res->resource('assets/sh_yate.js');
-        $res->resource('http://shjs.sourceforge.net/sh_style.css');
         $res->resource('assets/sh_style.css');
         $res->resource('sh_highlightDocument();');
     }

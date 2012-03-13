@@ -8,15 +8,15 @@
  *
  * filters: {{ foo | join(', ') | capitalize }}
  *
- * structures: {{! if foo }} ... {{! end }}
+ * structures: {{ if foo }} ... {{ end }}
  *
- * structures {{! for user in users }} ...{{ user->username | escape }}... {{! end }}
+ * structures {{ for user in users }} ...{{ user->username | escape }}... {{ end }}
  */
 
 /**
  * Description of yate
  *
- * @author tosa
+ * @author proddi@splatterladder.com
  */
 class scratchboxViewYate {
 
@@ -72,32 +72,30 @@ class scratchboxViewYate {
     protected function _compile($template, $sourceFun) {
         $tags = $this->_config['tags'];
         $rewriter = $this->_rewriteFun;
-        return preg_replace_callback('/{{(\S?) (.*?) }}/', function($args) use ($tags, $rewriter) {
-            $modifier = $args[1];
-            if ('=' === $modifier) return '{{ ' . $args[2] . ' }}';
-            if ('!' === $modifier) {
-                // first try regexp
-                foreach ($tags as $matcher => $tag) {
-                    if (($matcher[0] === '/') && preg_match($matcher, $args[2], $matches)) {
-                        $matches[0] = $rewriter;
-                        return '<? ' . call_user_func_array($tag, $matches) . ' ?>';
-                    }
-                }
-                // now map the first word
-                $values = explode(' ', $args[2], 2);
-                $tag = $tags[array_shift($values)];
-                if (!is_callable($tag)) throw new Exception('Unknown tag: ' . $tag);
-                $values[] = $rewriter;
-                return '<? ' . call_user_func_array($tag, $values) . ' ?>';
+        return preg_replace_callback('/{(?:(#)(!?) (.*?) #|({)(!?) (.*?) })}/s', function($args) use ($tags, $rewriter) {
+            // comment ?
+            if ('#' === $args[1]) {
+                if ('!' === $args[2]) return '{# ' . $args[3] . ' #}';
+                return '';
             }
-            if ('#' === $modifier) return '';
-            return '<? echo' . $rewriter($args[2]) . '?>';
+            $modifier = $args[4];
+            $expression = $args[6];
+            if ('!' === $args[5]) return '{{ '. $expression . ' }}';
+            // okay, we have to parse
+            // check for tags
+            foreach ($tags as $matcher => $tag) {
+                if (($matcher[0] === '/') && preg_match($matcher, $expression, $matches)) {
+                    $matches[0] = $rewriter;
+                    return '<? ' . call_user_func_array($tag, $matches) . ' ?>';
+                }
+            }
+            return '<? echo' . $rewriter($expression) . '?>';
         }, $sourceFun ? $sourceFun($template) : $template);
     }
 
     protected function _buildDefaultTags() {
         return array(
-            '/for (.*) in (.*)/' => function($rewriter, $value, $values) {
+            '/^\s*for (.*) in (.*)\s*$/' => function($rewriter, $value, $values) {
                 return 'foreach (' .$rewriter($values). ' as ' .$rewriter($value). ') {';
             },
             'if' => function($cond, $rewriter) {
@@ -107,9 +105,9 @@ class scratchboxViewYate {
                     return 'if (!' . $rewriter($cond) . ') {';
                 },
             'else' => function() { return '} else {'; },
-            'end' => function() { return '}'; },
-            'do' => function($cond, $rewriter) {
-                    return $rewriter( $cond);
+            '/^\s*end\s*$/' => function() { return '}'; },
+            '/^\s*do (.*)/' => function($rewriter, $expression) {
+                    return $rewriter($expression);
                 },
             'partial' => function() { return 'echo "[[partials currently not supported]]"'; },
         );

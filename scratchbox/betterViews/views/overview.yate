@@ -1,31 +1,37 @@
 <div class="content">
 <h2>YATE - Yet Another Template Engine</h2>
 
-<pre class="sh_yate">{{= array('a', 'b') | join(', ') }}</pre>
+<pre class="sh_yate">{{! array('a', 'b') | join(', ') }}</pre>
 {{ array('a', 'b') | join(', ') }}
 
-<pre class="sh_yate">{{= 'css/blog.css' | asset | link }}</pre>
+<pre class="sh_yate">{{! 'css/blog.css' | asset | link }}</pre>
 {{ 'css/blog.css' | asset | link("fooo") | escape }}
 
-<pre class="sh_yate">{{= var | default('var is not defined') }}</pre>
-{{! do var=NULL }}
+<pre class="sh_yate">{{! var | default('var is not defined') }}</pre>
+{{ do var=NULL }}
 {{ var | default('var is not defined') }}
 
-<pre class="sh_yate">{{= array('foo' => 'bar') | dump }}</pre>
-{{ array('foo' => 'bar') | dump }}
+<pre class="sh_yate">{{! array(
+    'foo' => 'bar',
+    "bar" => "foo"
+  ) | dump }}</pre>
+{{ array(
+    'foo' => 'bar',
+    "bar" => "foo"
+  ) | dump }}
 
-<pre class="sh_yate">{{= ! do add = array('foo' => 'bar') }}
-{{= add | dump }}
+<pre class="sh_yate">{{! do add = array('foo' => 'bar') }}
+{{! add | dump }}
 </pre>
-{{! do add = array('foo' => 'bar') }}
+{{ do add = array('foo' => 'bar') }}
 {{ add | dump }}
 
 <hr>
 
-{{! for doc in docs }}
+{{ for doc in docs }}
     <h2>{{ doc->title }}</h2>
     <p>{{ doc->description }}</p>
     <pre class="sh_yate">{{ doc->code | escape }}</pre>
-{{! end }}
+{{ end }}
 
 </div>
