@@ -42,7 +42,13 @@ $docs = array(
 # Yet Another Template Engine - YATE
 require_once('../../../libs/gaia.php');
 GAIA::registerNamespace('../libs/scratchbox', 'scratchbox');
-
+/*
+gaiaView::config(array(
+    'source' => scratchboxView::fileSource('../views', 'yate'),
+    'filters' => scratchboxView::filters()
+//    scratchboxViewYate::config()
+));
+*/
 $view = new scratchboxViewYate(array(
     'source' => scratchboxView::fileSource('../views', 'yate'),
     'filters' => scratchboxView::filters()
@@ -54,7 +60,7 @@ $view->config(array(
 
 gaiaServer::run(
     function($req, $res) use($view, $docs) {
-        $res->send(highlight_string($view->compile('overview', false), true));
+//        $res->send(highlight_string($view->compile('overview', false), true));
         $res->send($view->render('overview', array(
             'foo' => array('bar','foo'),
             'docs' => $docs
