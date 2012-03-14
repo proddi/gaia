@@ -15,6 +15,9 @@ class gaiaRequestHttp extends gaiaRequestAbstract {
         }
 
         $this->_uri = array_key_exists('PATH_INFO', $_SERVER) ? $_SERVER['PATH_INFO'] : '';
+        // Fix: workaround for lighttp rewrite rules, pse check for better solution
+        if ('/index.php' === substr($this->_uri,0, 10))
+            $this->_uri = substr($this->_uri, 10);
     }
 
     public function isPost() {
@@ -26,9 +29,6 @@ class gaiaRequestHttp extends gaiaRequestAbstract {
 
     public function getUri() {
         return $this->_uri;
-        return $_SERVER["PATH_INFO"];
-        $i = strrpos($_SERVER['SCRIPT_NAME'], '/') + 1;
-        return substr($_SERVER['REQUEST_URI'], $i);
     }
 
     public function setUri($uri) {
