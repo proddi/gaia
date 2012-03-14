@@ -1,10 +1,17 @@
 <?php
 /*
 echo '<pre>';
-$s = ' foo 500 "500" foo foo["foo"] foo->bar|foo(foo) '."\n";
+$s = 'foo 500 "500" \'foo\' foo["foo"] foo->bar|foo(foo) '."\n";
+//$s = 'foo=NULL; bar=(object) array("foo" => i5 < bar)'."\n";
+//$s = "\$v->filters->join(array('a', 'b') , ', ')\n";
 echo $s;
-echo preg_replace_callback('/([^\w\"\\\'>])([a-zA-Z][\w]+)([^\(\w\"\\\'])/', function($args) {
-    return $args[1].'$v->'.$args[2].$args[3];
+echo preg_replace_callback('/(?:("|\')(.*?)\1|(?<![\$|>|\w])(([a-zA-Z][\w->]*)(?![\(|\w])))/', function($args) {
+//    var_dump($args);
+    if (isset($args[3])) {
+        if (in_array($args[3], array('NULL', 'object'))) return $args[3];
+        return '$v->' . $args[3];
+    }
+    return $args[1].$args[2].$args[1];
 }, $s);
 
 echo '</pre>';
@@ -60,7 +67,7 @@ $view->config(array(
 
 gaiaServer::run(
     function($req, $res) use($view, $docs) {
-//        $res->send(highlight_string($view->compile('overview', false), true));
+//        return $res->send(highlight_string($view->compile('overview', false), true));
         $res->send($view->render('overview', array(
             'foo' => array('bar','foo'),
             'docs' => $docs

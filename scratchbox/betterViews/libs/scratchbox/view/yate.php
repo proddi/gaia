@@ -35,10 +35,13 @@ class scratchboxViewYate {
                     $syntax = '$filters->'.$filter.'('.$syntax.')';
             }
             // object rewriting
-            return preg_replace_callback('/([^\w\"\\\'>\$])([a-zA-Z][\w]+)([^\(\w\"\\\'])/', function($args) {
-                if (in_array($args[2], array('NULL', 'object'))) return $args[1].$args[2].$args[3];
-                return $args[1].'$v->'.$args[2].$args[3];
-            }, ' ' . $syntax . ' ');
+            return preg_replace_callback('/(?:("|\')(.*?)\1|(?<![\$|>|\w])(([a-zA-Z][\w->]*)(?![\(|\w])))/', function($args) {
+                if (isset($args[3])) {
+                    if (in_array($args[3], array('NULL', 'object'))) return $args[3];
+                    return '$v->' . $args[3];
+                }
+                return $args[1].$args[2].$args[1];
+            }, $syntax);
         };
     }
 
@@ -89,7 +92,7 @@ class scratchboxViewYate {
                     return '<? ' . call_user_func_array($tag, $matches) . ' ?>';
                 }
             }
-            return '<? echo' . $rewriter($expression) . '?>';
+            return '<? echo ' . $rewriter($expression) . ' ?>';
         }, $sourceFun ? $sourceFun($template) : $template);
     }
 

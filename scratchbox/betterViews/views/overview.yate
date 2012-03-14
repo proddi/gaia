@@ -1,10 +1,11 @@
 <div class="content">
 <h2>YATE - Yet Another Template Engine</h2>
 
+Some examples as first introduction:
 <pre class="sh_yate">{{! array('a', 'b') | join(', ') }}</pre>
 {{ array('a', 'b') | join(', ') }}
 
-<pre class="sh_yate">{{! 'css/blog.css' | asset | link }}</pre>
+<pre class="sh_yate">{{! 'css/blog.css' | asset | link("fooo") }}</pre>
 {{ 'css/blog.css' | asset | link("fooo") | escape }}
 
 <pre class="sh_yate">{{! var | default('var is not defined') }}</pre>
