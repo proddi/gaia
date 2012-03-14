@@ -1,5 +1,0 @@
-<h2><%= error->getMessage() %> Exception (<%= error->getCode() %>)</h2>
-<p>
-Stack trace:
-<pre><%= error->getTraceAsString() %></pre>
-</p>

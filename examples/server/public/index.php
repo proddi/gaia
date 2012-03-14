@@ -15,7 +15,10 @@ gaiaServer::run(
         function($req, $res) { $res->log('Ohhh\' wie ist das schön...'); },
         // a router
         gaiaServer::router(array(
-                '/hello/:id*' => function($req, $res) { $res->finish(gaiaView::render('hello', array('params' => $req->params))); },
+                '/hello/:id*' => function($req, $res) {
+                    $res->finish(gaiaView::render('hello', array('name' => $req->params->id)));
+                },
+                '/exception' => function($req, $res) { throw new Exception('Foo', 23); },
                 '*' => function($req, $res) { $res->log(2); }
             )),
         // middleware exception handling

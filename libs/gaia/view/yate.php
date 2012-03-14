@@ -1,24 +1,16 @@
 <?php
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- *
- * variables: {{ foo }}
- *
- * filters: {{ foo | join(', ') | capitalize }}
- *
- * structures: {{ if foo }} ... {{ end }}
- *
- * structures {{ for user in users }} ...{{ user->username | escape }}... {{ end }}
- */
-
 /**
- * Description of yate
+ * Implement YATE - Yet Another Template Engine
  *
+ * YATE is inspired by http://twig.sensiolabs.org but comes in less than 200 lines of code.
+ *
+ * For a detailed information have a look an the yate example
+ *
+ * @package gaia
+ * @subpackage view
  * @author proddi@splatterladder.com
  */
-class scratchboxViewYate {
+class gaiaViewYate {
 
     protected $_rewriteFun;
     public function __construct(array $config = NULL) {
@@ -37,10 +29,10 @@ class scratchboxViewYate {
     public function defaultConfig() {
         return array(
             'compiler' => self::compiler(),
-            'parser'   => self::parser(), // expression parser
-            'source'   => scratchboxView::fileSource('../views', 'yate'),
-            'filters'  => scratchboxView::filters(), // filters for expressions
-            'tags'     => self::tags()  // structures
+            'parser'   => self::parser(),
+            'source'   => gaiaView::fileSource('../views', 'yate'),
+            'filters'  => gaiaView::filters(),
+            'tags'     => self::tags()
         );
     }
 
@@ -53,14 +45,15 @@ class scratchboxViewYate {
     public function render($template, array $values = array()) {
         $template = $this->_config['compiler']($this->_config, $template);
 
-        // execute
         $v = (object)(empty($this->_config['values']) ? $values : array_merge($this->_config['values'], $values));
         $filters = $this->_config['filters'];
-        $view = $this; // for partials
+        $that = $this; // for operations on the view e.g. partials
         ob_start();
-        eval('?>' . $template . '<?;');
+        $res = eval('?>' . $template . '<?;');
         $template = ob_get_contents();
         ob_end_clean();
+        // check for error
+//        if (!is_null($res)) throw new Exception('Unable to render view:' . $template, 10);
         return $template;
     }
 
@@ -121,13 +114,13 @@ class scratchboxViewYate {
             '/^\s*for (.*) in (.*)\s*$/' => function($rewriter, $value, $values) {
                 return 'foreach (' .$rewriter($values). ' as ' .$rewriter($value). ') {';
             },
-            'if' => function($cond, $rewriter) {
-                    return 'if (' . $rewriter($cond) . ') {';
+            '/^\s*if (.*)$/' => function($rewriter, $expression) {
+                    return 'if (' . $rewriter($expression) . ') {';
                 },
-            'ifn' => function($cond, $rewriter) {
-                    return 'if (!' . $rewriter($cond) . ') {';
+            '/^\s*ifn (.*)$/' => function($rewriter, $expression) {
+                    return 'if (!' . $rewriter($expression) . ') {';
                 },
-            'else' => function() { return '} else {'; },
+            '/^\s*else\s*/' => function() { return '} else {'; },
             '/^\s*end\s*$/' => function() { return '}'; },
             '/^\s*do (.*)/' => function($rewriter, $expression) {
                     return $rewriter($expression);

@@ -13,19 +13,19 @@
 <tbody>
     <tr>
         <td class="key">Idx</td>
-        <td class="value"><%= user->idx %></td>
+        <td class="value">{{ user->idx }}</td>
     </tr>
     <tr>
         <td class="key">Name</td>
-        <td class="value"><%= user->name %></td>
+        <td class="value">{{ user->name }}</td>
     </tr>
     <tr>
         <td class="key">Age</td>
-        <td class="value"><%= user->age %></td>
+        <td class="value">{{ user->age }}</td>
     </tr>
     <tr>
         <td class="key">Quote</td>
-        <td class="quote"><%= user->quote %></td>
+        <td class="quote">{{ user->quote }}</td>
     </tr>
 </tbody>
 </table></div>

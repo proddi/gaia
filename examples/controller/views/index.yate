@@ -1,0 +1,11 @@
+index
+
+<p>message: {{ msg }}</p>
+
+<p>{{ content }}</p>
+
+/index
+
+<ul>
+    <li><a href="hello/world">/hello/world</a></li>
+</ul>

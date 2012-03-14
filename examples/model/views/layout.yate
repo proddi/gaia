@@ -4,9 +4,9 @@
     <h2>gaiaModel example</h2>
 </div>
 
-<%- res->content() %>
+{{ res->content() }}
 
 <ul>
-<li><a href="<%- baseUri %>">All users</a>
-<li><a href="<%- baseUri %>query/user?q=one">Search for 'one'</a>
+<li><a href="{{ baseUri }}">All users</a>
+<li><a href="{{ baseUri }}query/user?q=one">Search for 'one'</a>
 </ul>

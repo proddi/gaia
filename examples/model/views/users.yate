@@ -1,0 +1,20 @@
+<div class="bubble"><table>
+<thead>
+    <tr class="header">
+        <th>Idx</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Quote</th>
+    </tr>
+</thead>
+<tbody>
+{{ for user in users }}
+    <tr>
+        <td class="idx"><a href="{{ baseUri . 'user/' . user->idx }}">{{ user->idx }}</a></td>
+        <td class="name"><a href="{{ baseUri . 'query/user?q=' . user->name }}">{{ user->name }}</a></td>
+        <td class="age">{{ user->age }}></td>
+        <td class="quote">{{ user->quote }}</td>
+    </tr>
+{{ end }}
+</tbody>
+</table></div>

@@ -3,5 +3,5 @@
 </div>
 
 <pre>
-<%- res->content() %>
+{{ res->content() }}
 </pre>

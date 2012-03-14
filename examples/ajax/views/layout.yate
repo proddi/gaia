@@ -3,7 +3,7 @@
 </div>
 
 <div style="width: 40%; margin: auto; background-color: #EEE; border: 3px solid #CCC; text-align: center">
-    <%- res->content('time') %>
+    {{ res->content('time') }}
 </div>
 
-Some random quote: <i><%- res->content('quote') %></i>
+Some random quote: <i>{{ res->content('quote') }}</i>

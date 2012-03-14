@@ -1,4 +1,4 @@
-<form action="<%= url %>" method="post">
+<form action="{{ url }}" method="post">
 <ul>
     <li><input type="submit" name="action::foo" value="Foo action"></li>
     <li><input type="submit" name="action::bar" value="Bar action"></li>
