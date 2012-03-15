@@ -1,0 +1,15 @@
+{{ form }}
+
+<form action="{{ req->getBaseUri() }}" method="post">
+
+<ul>
+{{ for input in form }}
+    <li>{{ input }} <small>({{ input->name }})</small></li>
+{{ end }}
+</ul>
+
+</form>
+
+<p>
+Entered username: {{ form->login->value }}
+</p>
