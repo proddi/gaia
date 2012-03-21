@@ -1,15 +1,22 @@
-{{ form }}
+<h2>Form1</h2>
 
-<form action="{{ req->getBaseUri() }}" method="post">
-
+{{ form->begin }}
 <ul>
 {{ for input in form }}
-    <li>{{ input }} <small>({{ input->name }})</small></li>
+    {{ input | decorator }}
 {{ end }}
 </ul>
-
-</form>
+{{ form->end }}
 
 <p>
-Entered username: {{ form->login->value }}
+Entered username: {{ form->login->value }}<br>
+Entered password: {{ form->password->value }}<br>
 </p>
+
+<hr>
+<h2>Others Form</h2>
+{{ others->begin }}
+<ul>
+{{ for input in others }}{{ input | decorator }}{{ end }}
+</ul>
+{{ others->end }}

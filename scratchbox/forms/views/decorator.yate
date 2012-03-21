@@ -1,0 +1,3 @@
+<li{{ if input->errors }} style="border: 1px solid red"{{ end }}>
+{{ input }} <small>({{ input->name }})</small> {{ input->errors | join }}
+</li>

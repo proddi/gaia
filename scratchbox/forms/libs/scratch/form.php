@@ -7,6 +7,11 @@
  */
 class scratchForm {
 
+
+    static public function xform($name /*, middleware */) {
+        return new form($name, array_slice(func_get_args(), 1));
+    }
+
     static public function form(/* middleware */) {
         $mw = func_get_args();
         $form = new form();
@@ -19,41 +24,49 @@ class scratchForm {
         };
     }
 
-    // example stub
-    static public function text($name, array $cfg = NULL) {
+    // input stub
+    static public function text($name, array $cfg = array()) {
         return new input('text', $name, $cfg);
     }
 
+    static public function textarea($name, array $cfg = array()) {
+        return new inputTextarea('textarea', $name, $cfg);
+    }
+
     static public function password($name) {
-        return new input('password', $name);
+        return new inputPassword('password', $name);
     }
 
     static public function submit($name, $value) {
         return new input('submit', $name, $value);
     }
 
+    static public function hidden($name, $value) {
+        return new inputHidden('hidden', $name, $value);
+    }
+
     // validators
     static public function validateMinLength($min, $msg) {
         return function($value, &$error) use ($min, $msg) {
             $error = $msg;
-            return strlen($value) < $min;
+            return strlen($value) >= $min;
         };
     }
     static public function validateMaxLength($max, $msg) {
         return function($value, &$error) use ($max, $msg) {
             $error = $msg;
-            return strlen($value) > $max;
+            return strlen($value) <= $max;
         };
     }
-    static public function validateRegExp($regexp, $msg) {
-        return function($value, &$error) {
-            $error = 'validateRegExp not implemented';
-            return false;
+    static public function validateEmail($msg) {
+        return self::validateRegExp('/^[\w!#$%&\'*+\/=?`{|}~^-]+(?:\.[\w!#$%&\'*+\/=?`{|}~^-]+)*@(?:[A-Z0-9-]+.)+[A-Z]{2,6}$/i' , $msg);
+    }
+    static public function validateRegExp($regExp, $msg) {
+        return function($value, &$error) use ($regExp, $msg) {
+            $error = $msg;
+            return preg_match($regExp, $value) > 0;
         };
     }
-
-    // decorators
-    static function viewDecorator($template, array $params = NULL, $view = NULL) {}
 
 }
 
@@ -61,35 +74,49 @@ class scratchForm {
 class input {
     protected $_type;
     public $name;
-    public $value;
+    public $value = '';
+    public $valid;
+    public $errors = array();
+    public $form;
 
-    public function __construct($type, $name, array $cfg = NULL) {
+    public function __construct($type, $name, array $cfg = array()) {
         $this->type = $type;
         $this->name = $name;
-        $this->value = isset($cfg['value']) ? $cfg['value'] : '';
+        foreach ($cfg as $key => $value) { $this->$key = $value; }
     }
 
-    public function validate() {
+    public function form(form $form = NULL) {
+        if ($form) $this->form = $form;
+        return $form;
+    }
+
+    protected $_validators = array();
+    public function validate($validator) {
+        $this->_validators[] = $validator;
         return $this;
     }
 
-    public function decorator() {
-        return $this;
+    public function validateNow() {
+        $this->valid = true;
+        $error = NULL;
+        foreach ($this->_validators as $cb) {
+            if (!$cb($this->value, $error)) {
+                $this->valid = false;
+                $this->errors[] = $error;
+            }
+        }
+        return $this->valid;
     }
-
     // event handler to catch form events, no rendering at this point
     public function __invoke($req, $res) {
-        if ($req->isPost()) {
-            if ('password' !== $this->type) $this->value = $req->post->{$this->name};
+        if ($this->form->isSubmit()) {
+            $this->value = $req->post->{$this->name};
         }
-//        echo "text->__invoke($this->_type, $this->name) => ${_POST[$this->name]}<br>\n";
     }
 
     public function __toString() {
         $method = 'render' . ucfirst($this->type);
         return $this->$method();
-        return '<input autocapitalize="off" class="text" id="login_field" name="login" style="width: 15em;" tabindex="1" type="text" value="{{ login }}" />';
-        return 'input->__toString(' . $this->type . ', ' . $this->name . ');';
     }
 
     protected function renderText() {
@@ -106,20 +133,87 @@ class input {
 
 }
 
+class inputPassword extends input {
+    public function __toString() {
+        return '<input autocomplete="disabled" class="text" id="bar" name="' . $this->name . '" type="password" />';
+    }
+}
+
+class inputTextarea extends input {
+    public function __toString() {
+        return '<textarea class="text" id="bar" name="' . $this->name . '">' . $this->value . '</textarea>';
+    }
+}
+
+class inputHidden extends input {
+    public function __toString() {
+        return '<input type="hidden"> name="' . $this->name . '">' . $this->value . '</input>';
+    }
+}
+
 // ---- the form ----
 class form implements Iterator {
+    protected $name = 'default';
     protected $_fields = array();
     protected $_position = 0;
+    protected $_isSubmit = false;
+    public $valid;
+    public $begin = '<form>';
+    public $end = '</form>';
 
+    public function isSubmit() { return $this->_isSubmit; }
+    public function __construct($name, array $mw = array() /* middlewares */) {
+        $this->name = $name;
+        foreach ($mw as $input) {
+            if ($input instanceof input) $this->add($input);
+        }
+    }
+
+    public function __invoke(&$req, &$res, &$data) {
+        // register form
+        if (!isset($req->form)) $res->form = new gaiaInvokable();
+        $req->form->{$this->name} = $this;
+
+        $this->begin = '<form action="'.$req->getBaseUri().$this->name.'" method="post">';
+
+        // TODO: path check, might other form was submitted, not me
+        if (1 === strpos($req->getUri(), $this->name)) {
+            if ($req->isPost()) $this->_isSubmit = true;
+        }
+
+        // call the fields and exit if needed
+        if (gaiaServer::BREAKCHAIN === gaiaServer::_proceedMiddleware($this->_fields, $req, $res, $data)
+                || $res->isFinish()) {
+            return;
+        }
+
+        // validate
+        if ($this->_isSubmit) {
+            $this->valid = true;
+            foreach ($this->_fields as $input) {
+                $this->valid &= $input->validateNow();
+            }
+
+            // and onSubmit
+            if ($this->valid && $this->_isSubmit) {
+                foreach ($this->_onSubmits as $cb) $cb($req, $res, $data);
+            }
+        }
+    }
 
     public function __toString() {
-        return '[a form]';
+        return '[a form "'.$this->name.'"]';
     }
 
     public function add(input $input) {
         $this->_fields[] = $input;
         $this->{$input->name} = $input;
+        $input->form($this);
     }
+
+    protected $_onSubmits = array();
+    public function onSubmit($callback) { $this->_onSubmits[] = $callback; return $this; }
+    public function onInvalidate() { return $this; }
 
     final function rewind() { $this->_position = 0; }
     final function current() { return $this->_fields[$this->_position]; }
