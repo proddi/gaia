@@ -48,7 +48,7 @@ class gaiaView {
             'join' => function($arr, $glue = ', ') { return implode($glue, $arr); },
             'explode' => function($arr, $glue = ', ') { return explode($glue, $arr); },
             'first' => function($arr) { return $arr[0]; },
-            'dump' => function($data) { return '<pre>' . var_export($data, true) . '</pre>'; },
+            'dump' => function($data) { return highlight_string('<? '. var_export($data, true) . ' ?>'); },
             'upper' => function($str) { return strtoupper($str); },
             'lower' => function($str) { return strtolower($str); },
             'escape' => function($str) { return htmlentities($str); },
