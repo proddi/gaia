@@ -1,22 +1,7 @@
-<h2>Form1</h2>
-
 {{ form->begin }}
 <ul>
 {{ for input in form }}
-    {{ input | decorator }}
+    {{ input | partial('decorator') }}
 {{ end }}
 </ul>
 {{ form->end }}
-
-<p>
-Entered username: {{ form->login->value }}<br>
-Entered password: {{ form->password->value }}<br>
-</p>
-
-<hr>
-<h2>Others Form</h2>
-{{ others->begin }}
-<ul>
-{{ for input in others }}{{ input | decorator }}{{ end }}
-</ul>
-{{ others->end }}

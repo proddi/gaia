@@ -12,18 +12,6 @@ class scratchForm {
         return new form($name, array_slice(func_get_args(), 1));
     }
 
-    static public function form(/* middleware */) {
-        $mw = func_get_args();
-        $form = new form();
-        foreach ($mw as $input) {
-            if ($input instanceof input) $form->add($input);
-        }
-        return function($req, $res, $data) use ($mw, $form) {
-            // TODO: path check, might other form was submitted, not me
-            gaiaServer::_proceedMiddleware($mw, $req, $res, $form);
-        };
-    }
-
     // input stub
     static public function text($name, array $cfg = array()) {
         return new input('text', $name, $cfg);
@@ -147,7 +135,13 @@ class inputTextarea extends input {
 
 class inputHidden extends input {
     public function __toString() {
-        return '<input type="hidden"> name="' . $this->name . '">' . $this->value . '</input>';
+        return '<input type="hidden" name="' . $this->name . '" value="' . $this->value . '" />';
+    }
+}
+
+class inputCaptcha extends input {
+    public function __toString() {
+        return '<image src="..."><input type="text" name="' . $this->name . '" value="' . $this->value . '" />';
     }
 }
 
@@ -164,6 +158,7 @@ class form implements Iterator {
     public function isSubmit() { return $this->_isSubmit; }
     public function __construct($name, array $mw = array() /* middlewares */) {
         $this->name = $name;
+        $this->add(new inputHidden('hidden', '__gaiaFormId', array('value' => $name)));
         foreach ($mw as $input) {
             if ($input instanceof input) $this->add($input);
         }
@@ -171,18 +166,18 @@ class form implements Iterator {
 
     public function __invoke(&$req, &$res, &$data) {
         // register form
-        if (!isset($req->form)) $res->form = new gaiaInvokable();
-        $req->form->{$this->name} = $this;
+        if (!isset($req->forms)) $res->forms = new gaiaInvokable();
+        $req->forms->{$this->name} = $this;
 
-        $this->begin = '<form action="'.$req->getBaseUri().$this->name.'" method="post">';
+        $this->begin = '<form action="'.$req->getBaseUri().'" method="post">';
 
         // TODO: path check, might other form was submitted, not me
-        if (1 === strpos($req->getUri(), $this->name)) {
-            if ($req->isPost()) $this->_isSubmit = true;
+        if ($req->isPost() && ($req->post->__gaiaFormId === $this->name)) {
+            $this->_isSubmit = true;
         }
 
         // call the fields and exit if needed
-        if (gaiaServer::BREAKCHAIN === gaiaServer::_proceedMiddleware($this->_fields, $req, $res, $data)
+        if (gaiaServer::BREAKCHAIN === gaiaServer::mw($this->_fields, $req, $res, $data)
                 || $res->isFinish()) {
             return;
         }

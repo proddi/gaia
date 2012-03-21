@@ -1,0 +1,13 @@
+<style>
+    span.name, span.text, span.date { display: block; }
+</style>
+
+<ul>
+{{ for comment in comments }}
+<li>
+    <span class="name">Author: <b>{{ comment->author->name }}({{ comment->author->email }})</b></span>
+    <span class="text">Comment: <b>{{ comment->text }}</b></span>
+    <span class="date">Date: <b>{{ comment->date }}</b></span>
+</li>
+{{ end }}
+</ul>
