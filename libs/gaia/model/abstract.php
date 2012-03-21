@@ -11,10 +11,10 @@
 abstract class gaiaModelAbstract {
 
     private $__loaded = false;
-    protected $uid;
+    protected $_uid;
 
     public function __construct($uid=null) {
-        $this->uid = $uid;
+        $this->_uid = $uid;
     }
 
     /**

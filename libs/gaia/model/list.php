@@ -8,16 +8,15 @@
  * @author proddi@splatterladder.com
  * @abstract
  */
-abstract class gaiaModelList implements IteratorAggregate {
+abstract class gaiaModelList extends gaiaModelAbstract implements IteratorAggregate {
 
-	public $uid;
 	protected $__type;
 	protected $__items;
 	protected $__loaded = false;
 
     public function __construct($uid=null, $type = 'default') {
-        $this->uid = $uid;
         $this->__type = $type;
+        parent::__construct($uid);
     }
 
     /**
