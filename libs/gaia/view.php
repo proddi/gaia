@@ -48,13 +48,14 @@ class gaiaView {
             'join' => function($arr, $glue = ', ') { return implode($glue, $arr); },
             'explode' => function($arr, $glue = ', ') { return explode($glue, $arr); },
             'first' => function($arr) { return $arr[0]; },
-            'dump' => function($data) { return var_export($data, true); },
+            'dump' => function($data) { return '<pre>' . var_export($data, true) . '</pre>'; },
             'upper' => function($str) { return strtoupper($str); },
             'lower' => function($str) { return strtolower($str); },
             'escape' => function($str) { return htmlentities($str); },
             'asset' => function($str) { return 'http://some.host/' . $str; },
             'link' => function($str, $title) { return '<a href="' . $str . '">' . $title . '</a>'; },
-            'default' => function($str, $default) { return empty($str) ? $default : $str; }
+            'default' => function($str, $default) { return empty($str) ? $default : $str; },
+            'slice' => function($arr, $offset = NULL, $length = NULL) { return array_slice($arr, $offset, $length); }
         ));
     }
 }
