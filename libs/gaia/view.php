@@ -55,7 +55,10 @@ class gaiaView {
             'asset' => function($str) { return 'http://some.host/' . $str; },
             'link' => function($str, $title) { return '<a href="' . $str . '">' . $title . '</a>'; },
             'default' => function($str, $default) { return empty($str) ? $default : $str; },
-            'slice' => function($arr, $offset = NULL, $length = NULL) { return array_slice($arr, $offset, $length); }
+            'slice' => function($arr, $offset = NULL, $length = NULL) { return array_slice($arr, $offset, $length); },
+            'partial' => function($input, $template, array $values = array()) {
+                return gaiaView::render($template, array_merge($values, array('value' => $input)));
+             }
         ));
     }
 }
