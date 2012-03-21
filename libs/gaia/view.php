@@ -52,6 +52,8 @@ class gaiaView {
             'upper' => function($str) { return strtoupper($str); },
             'lower' => function($str) { return strtolower($str); },
             'escape' => function($str) { return htmlentities($str); },
+            'urlencode' => function($str) { return urlencode($str); },
+            'md5' => function($str) { return md5($str); },
             'asset' => function($str) { return 'http://some.host/' . $str; },
             'link' => function($str, $title) { return '<a href="' . $str . '">' . $title . '</a>'; },
             'default' => function($str, $default) { return empty($str) ? $default : $str; }
