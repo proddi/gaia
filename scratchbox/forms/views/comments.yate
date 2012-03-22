@@ -7,7 +7,7 @@
 <li>
     <span class="name">Author: <b>{{ comment->author->name }}({{ comment->author->email }})</b></span>
     <span class="text">Comment: <b>{{ comment->text }}</b></span>
-    <span class="date">Date: <b>{{ comment->date }}</b></span>
+    <span class="date">Date: <b>{{ comment->date | date('d-m-Y H:i:s') }}</b></span>
 </li>
 {{ end }}
 </ul>

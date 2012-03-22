@@ -175,7 +175,7 @@ class inputCaptcha extends input {
     }
 
     protected function _getCaptcha($captcha = null) {
-        if ($captcha) return $captcha;
+        if ($captcha && $captcha->expire > time()) return $captcha;
         return (object) array(
             'value' => rand(100, 999),
             'expire' => time() + 60 * 5
