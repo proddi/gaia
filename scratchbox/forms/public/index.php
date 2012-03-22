@@ -48,6 +48,7 @@ gaiaServer::run(
     scratchForm::xform('postAsAdmin',
         scratchForm::textarea('text', array('watermark' => 'you@email.com'))
             ->validate(scratchForm::validateMinLength(10, 'min 10 characters')),
+        new inputCaptcha('captcha', 'captcha'),
         scratchForm::submit('submit', array('value' => 'absenden'))
     )
         ->onSubmit(function($req, $res, $data) {
