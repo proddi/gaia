@@ -140,8 +140,24 @@ class inputHidden extends input {
 }
 
 class inputCaptcha extends input {
+    protected $_imgUrl;
+
+    public function __invoke(&$req, &$res) {
+        $this->_imgUrl = $req->getBaseUri().'captcha';
+        if (substr($req->getUri(), 1) === 'captcha') {
+            $res = new gaiaResponseImage($this->_createImage());
+        }
+    }
+
     public function __toString() {
-        return '<image src="..."><input type="text" name="' . $this->name . '" value="' . $this->value . '" />';
+        return '<image src="' . $this->_imgUrl . '"><input type="text" name="' . $this->name . '" value="' . $this->value . '" />';
+    }
+
+    protected function _createImage() {
+        $img = imagecreatetruecolor(60, 30);
+        $text_color = imagecolorallocate($img, 233, 14, 91);
+        imagestring($img, 5, 5, 5, '12345', $text_color);
+        return $img;
     }
 }
 

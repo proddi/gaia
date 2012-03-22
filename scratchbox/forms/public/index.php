@@ -66,7 +66,7 @@ gaiaServer::run(
         })
     ,
 
-    function($req, $res) {
+    function($req, $res, $data) {
         $res->send('guestForm', gaiaView::render('form', array(
             'form' => $req->forms->postAsGuest,
             'req' => $req
@@ -76,9 +76,7 @@ gaiaServer::run(
             'form' => $req->forms->postAsAdmin,
             'req' => $req
         )));
-    },
 
-    function($req, $res, $data) {
         $res->send('comments', gaiaView::render('comments', array(
             'comments' => $data->comments
         )));
