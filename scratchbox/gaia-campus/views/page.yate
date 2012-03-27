@@ -1,0 +1,5 @@
+<article>
+    <a style="float: right" href="{{ baseUrl }}/edit">[Bearbeiten]</a>
+    <h2>{{ page->title }}</h2>
+    <div>{{ page->text | page }}</div>
+</article>
