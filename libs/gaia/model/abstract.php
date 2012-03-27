@@ -20,9 +20,12 @@ abstract class gaiaModelAbstract {
     /**
      * Fetches data from datasource if needed.
      */
-    public function load() {
+    public function load($propName = NULL) {
         if (!$this->__loaded)
-            $this->__loaded = $this->__load($name);
+            $this->__loaded = $this->__load($propName);
+    }
+
+    public function exists() {
     }
 
     /**
