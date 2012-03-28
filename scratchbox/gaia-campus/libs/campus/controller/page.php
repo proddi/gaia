@@ -1,5 +1,6 @@
 <?php
 
+error_reporting(E_ALL);
 class campusControllerPage {
 
 //    public function __construct() {
@@ -7,16 +8,24 @@ class campusControllerPage {
 
     public function __invoke(&$req, &$res, &$data) {
         $data->model = new campusModelPage($req->params->pageId, campusModelPage::BY_PAGE_ID);
+
         $data->rootUri = $req->getRootUri();
+
         $router = gaiaServer::router(array(
             '/edit*' => campusServer::call($this, 'edit'),
             '*' => campusServer::call($this, 'show')
         ));
+
         return $router($req, $res, $data);
     }
 
-
     public function show(&$req, &$res, &$data) {
+        $mw = array(
+            gaiaServer::path('/page-:id', campusServer::controller('campusPageEdit')),
+            function($req, $res) { $res->send(" world!");}
+        );
+        gaiaServer::mw($mw, $req, $res, $data);
+
 /*
         if ($data->model->exists()) {
             $this->patchFilters();
@@ -49,6 +58,7 @@ class campusControllerPage {
                     $data->model->update();
                     $res = new gaiaResponseRedirect($data->rootUri);
                 });
+
         gaiaServer::mw(array(
             $form,
             function($req, $res, $data) {
@@ -60,9 +70,10 @@ class campusControllerPage {
         ), $req, $res, $data);
     }
 
+    // filters
     protected function patchFilters() {
         $cfg = gaiaView::view()->config();
-        $cfg['filters']->page = function($data) {
+        $cfg['filters']->wiki = function($data) {
             $res = '';
             $format = '';
             $currFormat = '';
