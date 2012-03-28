@@ -1,3 +1,5 @@
+<h1>Gaia RSS Reader</h1>
+
 <ul>
     <li><a href="{{ baseUri }}postillon">Postillon</a></li>
     <li><a href="{{ baseUri }}heise">Heise</a></li>

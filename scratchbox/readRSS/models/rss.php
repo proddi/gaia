@@ -38,18 +38,20 @@ class feedRss extends gaiaModelList {
 
         if(empty($xml)) throw new gaiaException(__CLASS__.': failed to load rss feed');
 
-        //check feed structure
+        //check feed structure for title
         if (isset($xml->channel)) {
-            $container = $xml->channel->item;
             $this->_title = $xml->channel->title;
 
         } elseif(isset($xml->entry)) {
-            $container = $xml->entry;
             $this->_title = $xml->title;
+
+        } else {
+            $this->_title = $this->_uid;
         }
 
-        foreach($container as $v) {
-            $this->__items[] = $v;
+        // fetch items by xpath, search for local name item in every namespace
+        foreach($xml->xpath("//*[local-name() = 'item']") as $item) {
+            $this->__items[] = $item;
         }
     }
 

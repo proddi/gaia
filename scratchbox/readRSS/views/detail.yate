@@ -1,6 +1,6 @@
 
 <ul>
-    <li>{{ item->title }}</li>
+    <li><strong>{{ item->title }}</strong></li>
     <li>{{ item->description }}</li>
     <li><a href="{{ item->link }}" target="_blank">{{ item->link }}</a></li>
 </ul>
