@@ -156,7 +156,8 @@ class inputCaptcha extends input {
         $a = '__captcha_' . $this->form->name . '_' . $this->name;
         $this->_imgUrl = $req->getRootUri() . $a;
         $this->_captcha = $_SESSION[$a] = $this->_getCaptcha(@$_SESSION[$a]);
-//        $this->_captcha =
+
+;
         if (substr($req->getUri(), 1) === $a) {
             $res = new gaiaResponseImage($this->_createImage());
         }
@@ -208,7 +209,7 @@ class form implements Iterator {
         if (!isset($req->forms)) $res->forms = new gaiaInvokable();
         $req->forms->{$this->name} = $this;
 
-        $this->begin = '<form action="' . $req->getRootUri() . '" method="post">';
+        $this->begin = '<form action="'.$req->getRootUri().'" method="post">';
 
         // TODO: path check, might other form was submitted, not me
         if ($req->isPost() && ($req->post->__gaiaFormId === $this->name)) {
@@ -236,7 +237,7 @@ class form implements Iterator {
     }
 
     public function __toString() {
-        return '[a form "' . $this->name .'"]';
+        return '[a form "'.$this->name.'"]';
     }
 
     public function add(input $input) {

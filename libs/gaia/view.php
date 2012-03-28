@@ -36,7 +36,8 @@ class gaiaView {
         $ext = '.' . $ext;
         return function($template) use ($url, $ext) {
             $url = $url . $template . $ext;
-            $source = file_get_contents($url);
+            $source = @file_get_contents($url);
+            if (false === $source) throw new Exception('Unable to load view from file "' . $url . '"');
             return (false !== $source) ? $source : ('[unable to load view from "' . $url . '"]');
         };
     }
@@ -48,7 +49,7 @@ class gaiaView {
             'join' => function($arr, $glue = ', ') { return implode($glue, $arr); },
             'explode' => function($arr, $glue = ', ') { return explode($glue, $arr); },
             'first' => function($arr) { return $arr[0]; },
-            'dump' => function($data) { return var_export($data, true); },
+            'dump' => function($data) { return highlight_string('<? '. var_export($data, true) . ' ?>'); },
             'upper' => function($str) { return strtoupper($str); },
             'lower' => function($str) { return strtolower($str); },
             'escape' => function($str) { return htmlentities($str); },
@@ -56,7 +57,12 @@ class gaiaView {
             'md5' => function($str) { return md5($str); },
             'asset' => function($str) { return 'http://some.host/' . $str; },
             'link' => function($str, $title) { return '<a href="' . $str . '">' . $title . '</a>'; },
-            'default' => function($str, $default) { return empty($str) ? $default : $str; }
+            'default' => function($str, $default) { return empty($str) ? $default : $str; },
+            'slice' => function($arr, $offset = NULL, $length = NULL) { return array_slice($arr, $offset, $length); },
+            'date' => function($time, $format) { return date($format, $time); },
+            'partial' => function($input, $template, array $values = array()) {
+                return gaiaView::render($template, array_merge($values, array('value' => $input)));
+             }
         ));
     }
 }

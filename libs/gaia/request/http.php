@@ -3,6 +3,7 @@
 class gaiaRequestHttp extends gaiaRequestAbstract {
 
     protected $_uri = '';
+    protected $_rootUri = '';
 
     public function __construct() {
         // override actions (idee taken from: http://flourishlib.com/browser/fRequest.php)
@@ -19,6 +20,7 @@ class gaiaRequestHttp extends gaiaRequestAbstract {
         // Fix: workaround for lighttp rewrite rules, pse check for better solution
         if ('/index.php' === substr($this->_uri,0, 10))
             $this->_uri = substr($this->_uri, 10);
+        $this->_rootUri = $this->getBaseUri() . substr($this->_uri, 1);
     }
 
     public function isPost() {
@@ -39,6 +41,10 @@ class gaiaRequestHttp extends gaiaRequestAbstract {
     public static function getBaseUri() {
         $i = strrpos($_SERVER['SCRIPT_NAME'], '/') + 1;
         return substr($_SERVER['REQUEST_URI'], 0, $i);
+    }
+
+    public function getRootUri() {
+        return substr($this->_rootUri, 0, strlen($this->_rootUri) - strlen($this->_uri));
     }
 
     public function isAjax() {

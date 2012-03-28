@@ -24,6 +24,16 @@ class gaiaServer {
     }
 
     //------------------------------------------------------------------------------------------------------------------
+    static public function mw(array $mws, gaiaRequestAbstract &$req, gaiaResponseAbstract &$res, &$data = NULL, &$exceptionHandler = NULL) {
+        foreach ($mws as $mw) {
+            if (gaiaServer::BREAKCHAIN === self::_proceedMiddleware($mw, $req, $res, $data)
+                    || $res->isFinish()) {
+                break;
+            }
+        }
+}
+
+    //------------------------------------------------------------------------------------------------------------------
     public function _executeMiddleware(array $middleware, gaiaRequestAbstract &$req, gaiaResponseAbstract &$res, &$data = NULL, &$exceptionHandler = NULL) {
         try {
             foreach ($middleware as $mw) {
@@ -83,6 +93,22 @@ class gaiaServer {
                 }
             }
             $req->setUri($uri);
+        };
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    static public function path($route /* mw, mw, ... */) {
+        $route = self::_routerPreparePath($route);
+        $mw = array_slice(func_get_args(), 1);
+        return function(&$req, &$res, &$data) use ($route, $mw) {
+            $uri = $req->getUri();
+            $oldParams = isset($req->params) ? (array) $req->params : array();
+            if (preg_match($route, $uri, $matches)) {
+                $req->setUri(array_key_exists('_uri', $matches) ? $matches['_uri'] : '');
+                $req->params = (object) array_merge($oldParams, $matches);
+                gaiaServer::mw($mw, $req, $res, $data);
+                $req->setUri($uri);
+            }
         };
     }
 
