@@ -34,25 +34,35 @@ class scratchForm {
     }
 
     // validators
+    static public function validateRequired($msg) {
+
+        //for Input::validate(), exexcute validateNow()
+        return function($value) use ($msg) {
+            return !empty($value) ? true : $msg;
+        };
+    }
     static public function validateMinLength($min, $msg) {
-        return function($value, &$error) use ($min, $msg) {
-            $error = $msg;
-            return strlen($value) >= $min;
+
+        //for Input::validate(), exexcute validateNow()
+        return function($value) use ($min, $msg) {
+            return strlen($value) >= $min ? true : $msg;
         };
     }
     static public function validateMaxLength($max, $msg) {
-        return function($value, &$error) use ($max, $msg) {
-            $error = $msg;
-            return strlen($value) <= $max;
+
+        //for Input::validate(), exexcute validateNow()
+        return function($value) use ($max, $msg) {
+            return strlen($value) <= $max ? true : $msg;
         };
     }
     static public function validateEmail($msg) {
         return self::validateRegExp('/^[\w!#$%&\'*+\/=?`{|}~^-]+(?:\.[\w!#$%&\'*+\/=?`{|}~^-]+)*@(?:[A-Z0-9-]+.)+[A-Z]{2,6}$/i' , $msg);
     }
     static public function validateRegExp($regExp, $msg) {
-        return function($value, &$error) use ($regExp, $msg) {
-            $error = $msg;
-            return preg_match($regExp, $value) > 0;
+
+        //for Input::validate(), exexcute validateNow()
+        return function($value) use ($regExp, $msg) {
+            return preg_match($regExp, $value) > 0 ? true : $msg;
         };
     }
 
@@ -86,9 +96,9 @@ class input {
 
     public function validateNow() {
         $this->valid = true;
-        $error = NULL;
         foreach ($this->_validators as $cb) {
-            if (!$cb($this->value, $error)) {
+            $error = $cb($this->value);
+            if (is_string($error)) {
                 $this->valid = false;
                 $this->errors[] = $error;
             }
@@ -156,8 +166,7 @@ class inputCaptcha extends input {
         $a = '__captcha_' . $this->form->name . '_' . $this->name;
         $this->_imgUrl = $req->getRootUri() . $a;
         $this->_captcha = $_SESSION[$a] = $this->_getCaptcha(@$_SESSION[$a]);
-
-;
+//        $this->_captcha =
         if (substr($req->getUri(), 1) === $a) {
             $res = new gaiaResponseImage($this->_createImage());
         }
@@ -209,7 +218,7 @@ class form implements Iterator {
         if (!isset($req->forms)) $res->forms = new gaiaInvokable();
         $req->forms->{$this->name} = $this;
 
-        $this->begin = '<form action="'.$req->getRootUri().'" method="post">';
+        $this->begin = '<form action="' . $req->getRootUri() . '" method="post">';
 
         // TODO: path check, might other form was submitted, not me
         if ($req->isPost() && ($req->post->__gaiaFormId === $this->name)) {
@@ -237,7 +246,7 @@ class form implements Iterator {
     }
 
     public function __toString() {
-        return '[a form "'.$this->name.'"]';
+        return '[a form "' . $this->name .'"]';
     }
 
     public function add(input $input) {
