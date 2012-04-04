@@ -19,6 +19,7 @@ class gaiaRequestHttp extends gaiaRequestAbstract {
         }
 
         $this->post = (object)$_POST;
+        foreach($this->post as $key => $value) $this->post->$key = stripslashes($value);
         $this->_uri = array_key_exists('PATH_INFO', $_SERVER) ? $_SERVER['PATH_INFO'] : '';
         // Fix: workaround for lighttp rewrite rules, pse check for better solution
         if ('/index.php' === substr($this->_uri,0, 10))
