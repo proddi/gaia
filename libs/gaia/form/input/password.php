@@ -6,7 +6,7 @@
  * Time: 10:35 PM
  */
 
-class gaiaFormInputPassword extends gaiaFormInput {
+class gaiaFormInputPassword extends gaiaFormInputAbstract {
     public function markup() {
         return '<input type="password" class="text" name="' . $this->name . '" id="' . $this->id . '" autocomplete="disabled" />';
     }

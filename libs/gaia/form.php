@@ -83,7 +83,7 @@ class form implements Iterator {
         $this->name = $name;
         $this->add(new gaiaFormInputHidden('__gaiaFormId', array('value' => $name)));
         foreach ($mw as $input) {
-            if ($input instanceof gaiaFormInput) $this->add($input);
+            if ($input instanceof gaiaFormInputAbstract) $this->add($input);
         }
     }
 
@@ -123,7 +123,7 @@ class form implements Iterator {
         return '[a form "' . $this->name .'"]';
     }
 
-    public function add(gaiaFormInput $input) {
+    public function add(gaiaFormInputAbstract $input) {
         $this->_fields[] = $input;
         $this->{$input->name} = $input;
         $input->form($this);

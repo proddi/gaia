@@ -6,7 +6,7 @@
  * Time: 10:32 PM
  */
 
-class gaiaFormInputTextarea extends gaiaFormInput {
+class gaiaFormInputTextarea extends gaiaFormInputAbstract {
     public function markup() {
         return '<textarea class="text" name="' . $this->name . '" id="' . $this->id . '">' . $this->value . '</textarea>';
     }

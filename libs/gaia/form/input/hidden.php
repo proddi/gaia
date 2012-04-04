@@ -6,7 +6,7 @@
  * Time: 10:36 PM
  */
 
-class gaiaFormInputHidden extends gaiaFormInput {
+class gaiaFormInputHidden extends gaiaFormInputAbstract {
     public function markup() {
         return '<input type="hidden" name="' . $this->name . '" id="' . $this->id . '" value="' . $this->value . '" />';
     }

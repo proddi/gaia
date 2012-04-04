@@ -6,7 +6,7 @@
  * Time: 10:38 PM
  */
 
-class gaiaFormInputCaptcha extends gaiaFormInput {
+class gaiaFormInputCaptcha extends gaiaFormInputAbstract {
     protected $_imgUrl;
     protected $_captcha;
 

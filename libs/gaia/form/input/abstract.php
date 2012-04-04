@@ -14,7 +14,7 @@
 /**
  * abstract Input Class
  */
-abstract class gaiaFormInput {
+abstract class gaiaFormInputAbstract {
     public $name;
     public $label   = null;
     public $id      = '';
