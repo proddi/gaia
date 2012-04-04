@@ -8,6 +8,6 @@
 
 class gaiaFormInputSubmit extends gaiaFormInput {
     public function markup() {
-        return '<input type="submit" name="' . $this->name . '" value="' . $this->value . '" />';
+        return '<input type="submit" name="' . $this->name . '" id="' . $this->id . '" value="' . $this->value . '" />';
     }
 }

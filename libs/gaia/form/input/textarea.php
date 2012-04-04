@@ -8,6 +8,6 @@
 
 class gaiaFormInputTextarea extends gaiaFormInput {
     public function markup() {
-        return '<textarea class="text" name="' . $this->name . '">' . $this->value . '</textarea>';
+        return '<textarea class="text" name="' . $this->name . '" id="' . $this->id . '">' . $this->value . '</textarea>';
     }
 }

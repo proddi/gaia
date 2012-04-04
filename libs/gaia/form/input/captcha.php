@@ -31,7 +31,7 @@ class gaiaFormInputCaptcha extends gaiaFormInput {
     }
 
     public function markup() {
-        return '<image src="' . $this->_imgUrl . '"><input type="text" name="' . $this->name . '" value="' . $this->value . '" />';
+        return '<image src="' . $this->_imgUrl . '"><input type="text" name="' . $this->name . '" id="' . $this->id . '" value="' . $this->value . '" />';
     }
 
     protected function _createImage() {

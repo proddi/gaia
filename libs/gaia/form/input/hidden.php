@@ -8,7 +8,7 @@
 
 class gaiaFormInputHidden extends gaiaFormInput {
     public function markup() {
-        return '<input type="hidden" name="' . $this->name . '" value="' . $this->value . '" />';
+        return '<input type="hidden" name="' . $this->name . '" id="' . $this->id . '" value="' . $this->value . '" />';
     }
 
     public function __toString() {

@@ -6,22 +6,42 @@
  * Time: 10:21 PM
  */
 
-// ---- the input field ----
+//TODO: attribute per option array
+//TODO: form __toString() soll komplette Form ausgeben {{ form }}
+//TODO: Form example erstellen + alle forms in scratchBox löschen
+
+
+/**
+ * abstract Input Class
+ */
 abstract class gaiaFormInput {
     public $name;
-    public $value = '';
-    public $label = null;
+    public $label   = null;
+    public $id      = '';
+    public $value   = '';
     public $valid;
-    public $errors = array();
+    public $errors  = array();
     public $form;
 
+    /**
+     * @param $name
+     * @param array $cfg
+     */
     public function __construct($name, array $cfg = array()) {
         $this->name = $name;
         foreach ($cfg as $key => $value) { $this->$key = $value; }
     }
 
+    /**
+     * call in form::add()
+     * @param form|null $form
+     * @return form|null
+     */
     public function form(form $form = NULL) {
-        if ($form) $this->form = $form;
+        if ($form) {
+            $this->form = $form;
+            $this->id = 'id_'.$this->form->name.'_'.$this->name;
+        }
         return $form;
     }
 
@@ -55,7 +75,10 @@ abstract class gaiaFormInput {
     }
 
     public function __toString() {
-        return '<div class="field">'. $this->markup() .'</div>';
+        return '<div class="field">'
+                    . ($this->label ? '<label for="'. $this->id .'">'. $this->label .'</label>' : '')
+                    . $this->markup()
+                .'</div>';
     }
 
     //input html markup function should implement all child classes

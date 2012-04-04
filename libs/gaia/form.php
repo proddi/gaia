@@ -14,7 +14,7 @@ class gaiaForm {
 
     // input stub
     static public function text($name, array $cfg = array()) {
-        return new gaiaFormInput($name, $cfg);
+        return new gaiaFormInputText($name, $cfg);
     }
 
     static public function textarea($name, array $cfg = array()) {

@@ -50,6 +50,7 @@ class campusControllerPage {
     public function edit(&$req, &$res, &$data) {
         $form = gaiaForm::xform('content',
             gaiaForm::textarea('text', array('value' => $data->model->text))
+                ->label('Type a Entry')
                 ->validate(gaiaForm::validateRequired('The field can not be emtpy.')),
             gaiaForm::submit('submit', array('value' => 'absenden'))
         )       ->onSubmit(function(&$req, &$res, &$data) {

@@ -8,6 +8,6 @@
 
 class gaiaFormInputPassword extends gaiaFormInput {
     public function markup() {
-        return '<input autocomplete="disabled" class="text" name="' . $this->name . '" type="password" />';
+        return '<input type="password" class="text" name="' . $this->name . '" id="' . $this->id . '" autocomplete="disabled" />';
     }
 }
