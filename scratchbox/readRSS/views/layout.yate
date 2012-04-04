@@ -1,0 +1,5 @@
+{{ header }}
+<br />
+{{ content }}
+<br />
+<center>{{ footer }}</center>

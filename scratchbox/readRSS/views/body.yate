@@ -1,5 +1,9 @@
+
+<h2>{{ feed->title }}</h2>
+{{ for item in feed }}
+
 <ul>
-    <li><a href="{{ baseUri }}postillon">Postillon</a></li>
-    <li><a href="{{ baseUri }}sz">Sueddeutsche</a></li>
-    <li><a href="{{ baseUri }}macnotes">Macnotes</a></li>
+    <li><a href="{{ baseUri }}{{ item->guid | md5 }}" target="_blank">{{ item->title }}</a></li>
 </ul>
+
+{{ end }}

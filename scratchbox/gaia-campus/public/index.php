@@ -3,7 +3,6 @@
 //error_reporting(0);
 
 require_once('../../../libs/gaia.php');
-GAIA::registerNamespace('../libs/scratch', 'scratch');
 GAIA::registerNamespace('../libs/campus', 'campus');
 
 require_once 'config-dev.php';
