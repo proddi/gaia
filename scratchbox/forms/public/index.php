@@ -18,16 +18,16 @@ gaiaServer::run(
             : ($_SESSION["comments"] = array());
     },
 
-    scratchForm::xform('postAsGuest',
-        scratchForm::text('login', array('value' => 'name'))
-            ->validate(scratchForm::validateMinLength(5, 'min 5 characters'))
-            ->validate(scratchForm::validateMaxLength(20, 'max 20 characters')),
-        scratchForm::text('email', array('watermark' => 'you@email.com'))
-            ->validate(scratchForm::validateEmail('looks not like a valid email address')),
-        scratchForm::textarea('text', array('watermark' => 'you@email.com'))
-            ->validate(scratchForm::validateMinLength(10, 'min 10 characters')),
-        new inputCaptcha('captcha', 'captcha'),
-        scratchForm::submit('submit', array('value' => 'absenden'))
+    gaiaForm::xform('postAsGuest',
+        gaiaForm::text('login', array('value' => 'name'))
+            ->validate(gaiaForm::validateMinLength(5, 'min 5 characters'))
+            ->validate(gaiaForm::validateMaxLength(20, 'max 20 characters')),
+        gaiaForm::text('email', array('watermark' => 'you@email.com'))
+            ->validate(gaiaForm::validateEmail('looks not like a valid email address')),
+        gaiaForm::textarea('text', array('watermark' => 'you@email.com'))
+            ->validate(gaiaForm::validateMinLength(10, 'min 10 characters')),
+        new gaiaFormInputCaptcha('captcha'),
+        gaiaForm::submit('submit', array('value' => 'absenden'))
     )
         ->onSubmit(function($req, $res, $data) {
             $data->message = 'Message sent!';
@@ -45,11 +45,11 @@ gaiaServer::run(
         })
     ,
 
-    scratchForm::xform('postAsAdmin',
-        scratchForm::textarea('text', array('watermark' => 'you@email.com'))
-            ->validate(scratchForm::validateMinLength(10, 'min 10 characters')),
-        new inputCaptcha('captcha', 'captcha'),
-        scratchForm::submit('submit', array('value' => 'absenden'))
+    gaiaForm::xform('postAsAdmin',
+        gaiaForm::textarea('text', array('watermark' => 'you@email.com'))
+            ->validate(gaiaForm::validateMinLength(10, 'min 10 characters')),
+        new gaiaFormInputCaptcha('captcha'),
+        gaiaForm::submit('submit', array('value' => 'absenden'))
     )
         ->onSubmit(function($req, $res, $data) {
             $data->message = 'Message sent!';

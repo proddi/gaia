@@ -21,10 +21,9 @@ class gaiaFormInputCaptcha extends gaiaFormInput {
 
     public function __invoke(&$req, &$res) {
         $a = '__captcha_' . $this->form->name . '_' . $this->name;
-        $this->_imgUrl = $req->getRootUri() . $a;
+        $this->_imgUrl = $req->baseUri . $a;
         $this->_captcha = $_SESSION[$a] = $this->_getCaptcha(@$_SESSION[$a]);
-//        $this->_captcha =
-        if (substr($req->getUri(), 1) === $a) {
+        if (substr($req->uri, 1) === $a) {
             $res = new gaiaResponseImage($this->_createImage());
         }
         parent::__invoke($req, $res);
