@@ -5,10 +5,10 @@ pre.sh_sourceCode {
   font-weight: normal;
 }
 
-pre.sh_sourceCode .sh_keyword { color: blue; font-weight: bold; }           /* language keywords */
-pre.sh_sourceCode .sh_type { color: darkgreen; }                            /* basic types */
+pre.sh_sourceCode .sh_keyword { color: #CCC; }         /* language keywords */
+pre.sh_sourceCode .sh_type { color: white; }                              /* basic types */
 pre.sh_sourceCode .sh_usertype { color: teal; }                             /* user defined types */
-pre.sh_sourceCode .sh_string { color: red; font-family: monospace; }        /* strings and chars */
+pre.sh_sourceCode .sh_string { color: #BDB; font-family: monospace; }        /* strings and chars */
 pre.sh_sourceCode .sh_regexp { color: orange; font-family: monospace; }     /* regular expressions */
 pre.sh_sourceCode .sh_specialchar { color: pink; font-family: monospace; }  /* e.g., \n, \t, \\ */
 pre.sh_sourceCode .sh_comment { color: brown; font-style: italic; }         /* comments */
@@ -79,7 +79,7 @@ pre.sh_sourceCode .sh_attribute { color: darkgreen; }
 pre.sh_sourceCode {
     background-color: #232125;
     line-height: 1.3em;
-    color: #aa9;
+    color: white;
     font-size: 14px;
     padding: .7em;
 }
@@ -93,7 +93,7 @@ pre.sh_sourceCode .sh_yate_code {
     color: #A0D0F0;
 }
 
-pre.sh_sourceCode .sh_keyword {
+pre.sh_sourceCode .sh_yate_keyword {
     color: #FF8400;
 }
 
@@ -101,10 +101,7 @@ pre.sh_sourceCode .sh_symbol {
     color: #E0882F;
 }
 
-pre.sh_sourceCode .sh_function {
-    color: red;
-}
-pre.sh_sourceCode .sh_string {
+pre.sh_sourceCode .sh_yate_string {
     color: #56DB3A;
 }
 pre.sh_sourceCode .sh_identifier {

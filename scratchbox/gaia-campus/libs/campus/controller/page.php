@@ -86,12 +86,12 @@ class campusControllerPage {
                 } else $format = '';
                   // apply format
                 if ($format === $currFormat) {
-                    $res .= $line . "\n";
+                    $res .= htmlspecialchars($line) . "\n";
                 } else {
                     $res .= $closeHtml . "\n";
                     $closeHtml = '';
                     switch ($format) {
-                        case 'code': $res .= '<pre class="sh_yate">' . $line . "\n";
+                        case 'code': $res .= '<pre class="sh_yate">' . htmlspecialchars($line) . "\n";
                                      $closeHtml = '</pre>';
                                      break;
                         default: $res .= $line . "\n";
