@@ -82,17 +82,24 @@ class gaiaServer {
             $_routes[self::_routerPreparePath($route)] = $mw;
         }
         return function(&$req, &$res, &$data) use ($_routes) {
-            $uri = $req->getUri();
+            $oldUri = $req->uri;
+            $oldBaseUri = $req->baseUri;
             $oldParams = isset($req->params) ? (array) $req->params : array();
             foreach ($_routes as $route => $mw) {
-                if (preg_match($route, $uri, $matches)) {
-                    $req->setUri(array_key_exists('_uri', $matches) ? $matches['_uri'] : '');
+                if (preg_match($route, $oldUri, $matches)) {
+                    $uriLeft = $matches['_uri'];
+                    $baseUri = $req->baseUri;
+                    $baseUri = $uriLeft ? substr($req->requestUri, 0, -strlen($uriLeft)) : $req->requestUri;
+                    if ('/' !== $baseUri[strlen($baseUri)-1]) $baseUri .= '/';
+                    $req->baseUri = $baseUri;
+                    $req->uri = $uriLeft ? '/' . $uriLeft : '';
                     $req->params = (object) array_merge($oldParams, $matches);
                     gaiaServer::_proceedMiddleware($mw, $req, $res, $data);
                     break;
                 }
             }
-            $req->setUri($uri);
+            $req->uri = $oldUri;
+            $req->baseUri = $oldBaseUri;
         };
     }
 
@@ -101,6 +108,22 @@ class gaiaServer {
         $route = self::_routerPreparePath($route);
         $mw = array_slice(func_get_args(), 1);
         return function(&$req, &$res, &$data) use ($route, $mw) {
+            $oldUri = $req->uri;
+            $oldBaseUri = $req->baseUri;
+            $oldParams = isset($req->params) ? (array) $req->params : array();
+            if (preg_match($route, $oldUri, $matches)) {
+                $uriLeft = $matches['_uri'];
+                $baseUri = $req->baseUri;
+                $baseUri = $uriLeft ? substr($req->requestUri, 0, -strlen($uriLeft)) : $req->requestUri;
+                if ('/' !== $baseUri[strlen($baseUri)-1]) $baseUri .= '/';
+                $req->baseUri = $baseUri;
+                $req->uri = $uriLeft ? '/' . $uriLeft : '';
+                $req->params = (object) array_merge($oldParams, $matches);
+                gaiaServer::mw($mw, $req, $res, $data);
+                $req->uri = $oldUri;
+                $req->baseUri = $oldBaseUri;
+            }
+/*
             $uri = $req->getUri();
             $oldParams = isset($req->params) ? (array) $req->params : array();
             if (preg_match($route, $uri, $matches)) {
@@ -109,6 +132,7 @@ class gaiaServer {
                 gaiaServer::mw($mw, $req, $res, $data);
                 $req->setUri($uri);
             }
+*/
         };
     }
 
@@ -156,8 +180,7 @@ class gaiaServer {
 
     static protected function _routerPreparePath($path) {
         $path = str_replace('/', '\/', $path);
-        $path = preg_replace('/\:(\w+)/', '(?P<$1>\w+)', $path);
-//        $path = str_replace('+', '(?P<_uri>.+)', $path);
+        $path = preg_replace('/\:(\w+)/', '(?P<$1>[^\/]+)\/?', $path);
         $path = str_replace('*', '(?P<_uri>.*)', $path);
         $path = '/^' . $path . '$/';
         return $path;

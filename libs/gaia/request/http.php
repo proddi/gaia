@@ -2,6 +2,9 @@
 
 class gaiaRequestHttp extends gaiaRequestAbstract {
 
+    public $baseUri;
+    public $uri;
+    public $requestUri;
     protected $_uri = '';
     protected $_rootUri = '';
 
@@ -21,8 +24,18 @@ class gaiaRequestHttp extends gaiaRequestAbstract {
         if ('/index.php' === substr($this->_uri,0, 10))
             $this->_uri = substr($this->_uri, 10);
         $this->_rootUri = $this->getBaseUri() . substr($this->_uri, 1);
+
+        $i = strrpos($_SERVER['SCRIPT_NAME'], '/') + 1;
+        $this->baseUri = substr($_SERVER['REQUEST_URI'], 0, $i);
+
+        $this->uri = $this->_uri;
+        $this->requestUri = $_SERVER['REQUEST_URI'];
     }
 
+    public function addToBaseUri($add) {
+        var_dump($add);
+        $this->baseUri .= ('/' === $add[0]) ? substr($add, 1) : $add;
+    }
     public function isPost() {
         return 'POST' === $_SERVER['REQUEST_METHOD'];
     }

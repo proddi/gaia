@@ -209,7 +209,7 @@ class form implements Iterator {
         if (!isset($req->forms)) $res->forms = new gaiaInvokable();
         $req->forms->{$this->name} = $this;
 
-        $this->begin = '<form action="'.$req->getRootUri().'" method="post">';
+        $this->begin = '<form action="' . $req->requestUri . '" method="post">';
 
         // TODO: path check, might other form was submitted, not me
         if ($req->isPost() && ($req->post->__gaiaFormId === $this->name)) {

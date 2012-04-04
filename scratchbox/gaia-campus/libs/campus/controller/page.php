@@ -9,7 +9,7 @@ class campusControllerPage {
     public function __invoke(&$req, &$res, &$data) {
         $data->model = new campusModelPage($req->params->pageId, campusModelPage::BY_PAGE_ID);
 
-        $data->rootUri = $req->getRootUri();
+        $data->rootUri = $req->baseUri;
 
         $router = gaiaServer::router(array(
             '/edit*' => campusServer::call($this, 'edit'),
@@ -43,7 +43,7 @@ class campusControllerPage {
         $this->patchFilters();
         $res->send(gaiaView::render('page', array(
             'page' => $data->model,
-            'baseUrl' => $req->getRootUri()
+            'baseUrl' => $req->baseUri
         )));
     }
 
