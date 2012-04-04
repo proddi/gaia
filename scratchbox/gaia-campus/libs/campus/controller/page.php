@@ -39,10 +39,10 @@ class campusControllerPage {
     }
 
     public function edit(&$req, &$res, &$data) {
-        $form = scratchForm::xform('content',
-            scratchForm::textarea('text', array('value' => $data->model->text))
-                ->validate(scratchForm::validateRequired('The field can not be emtpy.')),
-            scratchForm::submit('submit', array('value' => 'absenden'))
+        $form = gaiaForm::xform('content',
+            gaiaForm::textarea('text', array('value' => $data->model->text))
+                ->validate(gaiaForm::validateRequired('The field can not be emtpy.')),
+            gaiaForm::submit('submit', array('value' => 'absenden'))
         )       ->onSubmit(function(&$req, &$res, &$data) {
                     $form = $req->forms->content;
                     $data->model->text = $form->text->value;
