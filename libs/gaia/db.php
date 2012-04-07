@@ -7,7 +7,7 @@
  * @subpackage db
  * @author proddi@splatterladder.com
  */
-class gaiaDbException extends gaiaException {}
+class gaiaDbException extends Exception {}
 
 /**
  * Static DB interface
@@ -104,9 +104,14 @@ class gaiaDb {
 		return $adapter->fetchRow($sql);
 	}
 	// return a STMI object
-	public static function query($sql) {
+	public static function prepare($sql) {
 		$adapter = self::getAdapter();
-		return $adapter->query($sql);
+		return $adapter->prepare($sql);
+	}
+	// execute and return a STMI object
+	public static function query($sql /*, args */) {
+		$adapter = self::getAdapter();
+        return call_user_func_array(array($adapter, 'query'), func_get_args());
 	}
 	// execute sql
 	public static function exec($sql) {

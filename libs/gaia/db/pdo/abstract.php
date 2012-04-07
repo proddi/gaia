@@ -8,7 +8,8 @@
  */
 
 abstract class gaiaDbPdoAbstract extends gaiaDbAbstract {
-	protected $__dbLink;
+
+    protected $__dbLink;
 
 	/**
 	 * force drivers to implement PDO dsn string
@@ -18,11 +19,18 @@ abstract class gaiaDbPdoAbstract extends gaiaDbAbstract {
 	protected function createQuery() {
 		return new gaiaDbPdoQuery($this, $this->__dbLink);
 	}
-	protected function createStatement() {
-		return new gaiaDbPdoStatement($this, $this->__dbLink);
+	protected function createStatement($sql) {
+		return new gaiaDbPdoStatement($this, $sql);
 	}
 
+    // opens the database if needed and returns the db link
+    public function link() {
+        if (!$this->__dbLink) $this->open();
+        return $this->__dbLink;
+    }
+
 	public function open(array $config = null) {
+        if ($this->__dbLink) return;
 		try {
 			$this->__dbLink = new PDO($this->getDsn(), $this->_config['username'], $this->_config['password']);
 		} catch (PDOException $e) {
@@ -47,18 +55,13 @@ abstract class gaiaDbPdoAbstract extends gaiaDbAbstract {
 	 * @param unknown_type $statement
 	 * @return unknown
 	 */
-	public function prepare($statement) {
-		if (!$this->_isOpen) $this->open();
-		$query = $this->createStatement();
-		$query->prepare($statement);
-		return $query;
-	}
 
 	public function quote($statement) {
 		if (!$this->_isOpen) $this->open();
 		return $this->__dbLink->quote($statement);
 	}
 }
+
 
 /**
  * result query for quick usage
@@ -130,79 +133,62 @@ class gaiaDbPdoQuery extends gaiaDbQueryAbstract {
 
 }
 
+
 /**
  * query for prepared usage
  *
  */
-
 class gaiaDbPdoStatement extends gaiaDbStatementAbstract {
-	protected $_Db;
-	protected $__dbLink;
-	protected $__stmt = null;
-	protected $__meta;
-	protected $__keys;
-	protected $__values;
+	protected $_db;
+	protected $__stmt;
 
-	public function __construct(gaiaDbPdoAbstract $db, $dbLink) {
-		$this->_Db = $db;
-		$this->__dbLink = $dbLink;
+	public function __construct(gaiaDbPdoAbstract $db, $sql) {
+		$this->_db = $db;
+        $this->__stmt = $db->link()->prepare($sql);
+        if (!$this->__stmt) throw new gaiaDbException($this->getErrorMessage(), intval($this->getErrorCode()));
 	}
 
-	public function prepare($statement) {
-		$this->free();
-		$this->_statement = $statement;
-		$this->__stmt = $this->__dbLink->prepare($this->_statement);
-		if (!$this->__stmt instanceof PDOStatement)
-			throw new gaiaDbException('pdo prepare error: '.$statement.'/'.$this->ErrorMessage());
-		return $this;
-	}
+    public function __destruct() {
+        unset($this->__stmt);
+    }
 
-	public function free() {
-		if (isset($this->__stmt)) unset($this->__stmt);
-		return $this;
-	}
-
-	/**
-	 * execute a prepared statement
-	 *
-	 * @param array $params
-	 * @return $this
-	 */
-	public function execute(array $params = null) {
-		if (!isset($this->__stmt)) return $this;
-
-		$this->_isFail = !$this->__stmt->execute($params);
-		if ($this->_isFail) throw new gaiaDbException('pdo execute failed: '.$this->ErrorMessage.' ('.$this->_statement.')');
+	public function execute(/* args */) {
+		$this->_isFail = !$this->__stmt->execute(func_get_args());
+		if ($this->_isFail) throw new gaiaDbException('pdo execute failed: '.$this->getErrorMessage().' ('.$this->_statement.')');
 		return $this;
 	}
 
 	public function fetch($fetchMode = null) {
 		$this->_currPos++;
-		switch (isset($fetchMode) ? $fetchMode : $this->_Db->fetchMode) {
+		switch (isset($fetchMode) ? $fetchMode : $this->_db->fetchMode) {
 //			case gaiaDb::fetchAssoc:	return mysqli_fetch_assoc($this->__queryResult); break;
-//			case gaiaDb::fetchObj:		return mysqli_fetch_object($this->__queryResult); break;
-			case gaiaDb::fetchArray:	if (!$result = $this->__stmt->fetch(PDO::FETCH_ASSOC)) return false;
-										return new gaiaUtilsArray($result); break;
-			default:					return $this->__stmt->fetch(PDO::FETCH_NUM); break;
+            case gaiaDb::fetchObj:
+			case gaiaDb::fetchObject:   return $this->__stmt->fetch(PDO::FETCH_OBJ);
+			case gaiaDb::fetchArray:	return $this->__stmt->fetch(PDO::FETCH_ASSOC);
+			default:					return $this->__stmt->fetch(PDO::FETCH_NUM);
 		}
-		throw new gaiaDbException('gaia pdo does not support fetch method');
 	}
 
-	public function fetch2($fetchMode = null) {
-		throw new gaiaDbException('n/i');
+	public function fetchAll($fetchMode = null) {
+        switch ($fetchMode) {
+            case gaiaDb::fetchObj:
+            case gaiaDb::fetchObject:   return $this->__stmt->fetchAll(PDO::FETCH_OBJ);
+            case gaiaDb::fetchArray:    return $this->__stmt->fetchAll(PDO::FETCH_ASSOC);
+            default:                    return $this->__stmt->fetchAll(PDO::FETCH_NUM);
+        }
 	}
 
 	/**
 	 * status values
 	 */
 	protected function getLastInsertId() {
-		return $this->__dbLink->lastInsertId();
+		return $this->_db->link()->lastInsertId();
 	}
 	protected function getErrorCode() {
-		return $this->__dbLink->errorCode();
+		return $this->_db->link()->errorCode();
 	}
 	protected function getErrorMessage() {
-		$error = $this->__dbLink->errorInfo();
+		$error = $this->_db->link()->errorInfo();
 		return $error[2];
 	}
 }

@@ -35,7 +35,7 @@ abstract class gaiaDbAbstract {
 		return $this;
 	}
 	abstract protected function createQuery();
-	abstract protected function createStatement();
+	abstract protected function createStatement($sql);
 
 	/**
 	 * data select/execute
@@ -69,12 +69,14 @@ abstract class gaiaDbAbstract {
 //		if ($query->eof) return null;
 		return $query->fetch();
 	}
-	public function prepare($statement) {
-		if (!$this->_isOpen) $this->open();
-		$query = $this->createQuery();
-		$query->prepare($statement);
-		return $query;
+	public function prepare($sql) {
+		return $this->createStatement($sql);
 	}
+
+    public function query($sql /*, args */) {
+		$stmt = $this->createStatement($sql);
+        return call_user_func_array(array($stmt, 'execute'), array_slice(func_get_args(), 1));
+    }
 
 	public function insert2($statement) {
 		echo '***';
@@ -158,8 +160,7 @@ abstract class gaiaDbStatementAbstract {
 	protected $_errorMessage;
 	protected $_errorCode;
 
-	abstract public function prepare($sql);
-	abstract public function execute(array $params = null);
+	abstract public function execute(/* args */);
 	abstract public function fetch($fetchMode = null);
 
 	/**
