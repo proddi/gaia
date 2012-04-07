@@ -1,0 +1,6 @@
+<h2>Hello template</h2>
+
+<ul>
+<li>config: {{ config | dump }}</li>
+<li>user: #{{ user->idx }} {{ user->name }} ({{ user->age }})</li>
+</ul>
