@@ -14,7 +14,7 @@ $pdo = new scratchPdoSqlite(array(
 ));
 
 echo "<h2>Create a single statement and fetches the result into an object:</h2>";
-$user = $pdo->query('SELECT idx, name FROM users WHERE idx=?', array(2))->into(new stdClass());
+$user = $pdo->query('SELECT idx, name FROM users WHERE idx=?', 2)->into(new stdClass());
 var_dump($user);
 
 // echo "<h2>Perform a INSERT statement with parameters and return number of affected rows:</h2>";
