@@ -36,6 +36,10 @@ class scratchPdoStatement {
         return $this->fetch(PDO::FETCH_NUM);
     }
 
+    public function map() {
+        return $this->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function into($obj) {
         if (!$this->_executed) $this->execute($this->_values);
         $this->_sth->setFetchMode(PDO::FETCH_INTO, $obj);
