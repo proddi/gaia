@@ -24,6 +24,7 @@ try {
     fetchViaPreparedStatement();
     fetchViaPreparedStatement2();
     fetchViaPdo();
+    fetchIntoObject();
 
 } catch (gaiaDbException $e) {
     echo "<pre>gaiaDbException: " . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>';
@@ -45,6 +46,13 @@ function fetchViaPreparedStatement2() {
 }
 
 function fetchViaPdo() {
+    $q = gaiaDb::query('SELECT idx, name FROM users WHERE 1');
+    foreach ($q->fetchAll(gaiaDb::fetchObj) as $item) {
+        echo '<li>'.$item->name.'</li>';
+    }
+}
+
+function fetchIntoObject() {
     $q = gaiaDb::query('SELECT idx, name FROM users WHERE 1');
     foreach ($q->fetchAll(gaiaDb::fetchObj) as $item) {
         echo '<li>'.$item->name.'</li>';
