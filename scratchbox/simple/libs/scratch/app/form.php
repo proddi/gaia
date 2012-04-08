@@ -131,6 +131,10 @@ class scratchAppForm implements Iterator {
         return new scratchAppFormInputText($name, $cfg);
     }
 
+    static public function textarea($name, array $cfg = array()) {
+        return new scratchAppFormInputTextarea($name, $cfg);
+    }
+
     static public function submit($name, array $cfg = array()) {
         return new scratchAppFormInputSubmit($name, $cfg);
     }

@@ -6,14 +6,6 @@
 require_once('../../../libs/gaia.php');
 GAIA::registerNamespace('../libs/scratch', 'scratch');
 
-/* Minimal setup: * /
-$app = new scratchApp();
-$app->use(function($app) {
-    $app->response()->send('Hello World!');
-});
-$app();
-exit; /* */
-
 /* Middleware setup with custom functions: */
 $app = new scratchApp(array(
     'db' => 'scratchDbSqlite',
@@ -25,6 +17,7 @@ $app = new scratchApp(array(
 $app->use('scratchAppMiddlewareShortcuts');
 $app->use('scratchDbMiddleware');
 $app->use('scratchAppFormMiddleware');
+$app->use('scratchAppMiddlewareSession');
 
 $app->get('/foo/:bar/:param*', function($bar, $param, $app) {
     scratchModel::db($app->db()); // register global db
@@ -36,8 +29,8 @@ $app->get('/foo/:bar/:param*', function($bar, $param, $app) {
         'param' => $param,
         'user' => $user
     ));
-    $app->stop(); // might $app->finish() / ->halt() / ->continue()
-    throw new Exception('Foo', 23);
+//    $app->stop(); // might $app->finish() / ->halt() / ->continue()
+//    throw new Exception('Foo', 23);
 })->name('foo-route');
 
 // IDEA for subrouter
@@ -50,15 +43,15 @@ $app->get('/sub/:foo*', function($foo, $app) {
 })->name('sub-route');
 
 // index
-$app->get('/form/:foo*', function($foo, $app) {
+$app->get('/form*', function($app) {
     $form = $app->form('postAsGuest',
         scratchAppForm::text('login', array('value' => 'name'))
             ->validate(gaiaForm::validateMinLength(5, 'min 5 characters'))
             ->validate(gaiaForm::validateMaxLength(20, 'max 20 characters')),
         scratchAppForm::text('email', array('watermark' => 'you@email.com'))
             ->validate(gaiaForm::validateEmail('looks not like a valid email address')),
-//        gaiaForm::textarea('text', array('watermark' => 'you@email.com'))
-//            ->validate(gaiaForm::validateMinLength(10, 'min 10 characters')),
+        scratchAppForm::textarea('text', array('watermark' => 'you@email.com'))
+            ->validate(gaiaForm::validateMinLength(10, 'min 10 characters')),
         new scratchAppFormInputCaptcha('captcha'),
         scratchAppForm::submit('submit', array('value' => 'absenden'))
     )->onSubmit(function($form, $app) {
@@ -74,6 +67,16 @@ $app->get('/form/:foo*', function($foo, $app) {
     ));
 });
 
+$app->get('/session', function($app) {
+    $app->session()->view++;
+    echo 'Visit #' . $app->session()->view . " (/session/destroy to remove session data)" . "<br>\n";
+});
+$app->get('/session/destroy', function($app) {
+    $app->session()->destroy();
+    echo 'session destroyed' . "<br>\n";
+});
+
+
 // index
 $app->get('/', function($app) {
     $app->response()->send('call with /foo/bar/blubb/demo<br>');
@@ -85,36 +88,3 @@ $app->on404(function($app) {
 });
 
 $app();
-exit; /* */
-
-
-
-
-
-
-$app = new scratchApp(array(
-    'view' => new scratchViewYate()
-));
-
-
-// $app->environment('production', function() {});
-// $app->environment('staging', function() {});
-// $app->environment('development', function() {});
-
-
-// $app->middleware('scratchAppMiddlewareRouter');
-/*
-$app->get('/foo', function() use ($app) {
-//    var_dump($app->request()->url(), $app->request()->baseUrl());
-//    echo highlight_string($app->view()->compile('foo', array('foo' => 'bar')));
-    $app->render('foo', array('foo' => 'bar'));
-//    $app->renderTo('menu', 'template', array());
-//    echo $app->content();
-// ----------->    $app->response();
-//    $app->response(new scratchResponseImage($image));
-})->name('foo');
-*/
-
-$app();
-
-?>

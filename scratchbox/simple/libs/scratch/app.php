@@ -76,7 +76,7 @@ class scratchApp {
      */
     public function router() {
         if (!$this->_router) {
-            $this->_router = new scratchAppRouter();
+            $this->_router = new scratchAppRouter($this);
         }
         return $this->_router;
     }
@@ -131,13 +131,21 @@ class scratchApp {
     protected $_invokeLevel = 0;
 
     public function __invoke() {
-        $xxx = 0 === $this->_invokeLevel++;
-        $mixins = $this->_mixins;
-        $mixins[] = $this->router();
-        $this->_router = NULL; // reset for embeddet app() calls
-
-        if ($xxx) {
+        if ($this->_invokeLevel++) {
             try {
+                $mw = $this->router();
+                $this->_router = NULL; // reset for embeddet app() calls
+                $mw($this, array());
+            } catch (Exception $e) {
+                $this->_invokeLevel--;
+                throw $e;
+            }
+        } else {
+            try {
+                $mixins = $this->_mixins;
+                $mixins[] = $this->router();
+                $this->_router = NULL; // reset for embeddet app() calls
+
                 $callable = array_shift($mixins);
                 $callable($this, $mixins);
             } catch (Exception $e) {
@@ -146,16 +154,7 @@ class scratchApp {
     //            $res->title('scratchApp application error');
                 $res->send(self::generateErrorMarkup($e));
             }
-
             $this->response()->streamOut();
-        } else {
-            try {
-                $callable = array_shift($mixins);
-                $callable($this, $mixins);
-            } catch (Exception $e) {
-                $this->_invokeLevel--;
-                throw $e;
-            }
         }
         $this->_invokeLevel--;
     }

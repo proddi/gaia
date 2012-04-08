@@ -2,7 +2,7 @@
 {{ form->begin }}
 <ul>
 {{ for input in form }}
-    <li>{{ input }} ({{ input->name }}) ({{ input->errors | join(', ') }})</li>
+    <li>{{ input }} ({{ input->errors | join(', ') }})</li>
 {{ end }}
 </ul>
 {{ form->end }}

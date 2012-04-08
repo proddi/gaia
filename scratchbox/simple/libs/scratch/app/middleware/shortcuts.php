@@ -2,10 +2,8 @@
 
 class scratchAppMiddlewareShortcuts extends scratchAppMiddleware {
 
-    protected $_app;
-
     public function __construct($app) {
-        $this->_app = $app;
+        parent::__construct($app);
         $app->register('render', array($this, 'render'));
     }
 

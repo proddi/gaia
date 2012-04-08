@@ -23,7 +23,8 @@ class scratchAppFormInputCaptcha extends scratchAppFormInputAbstract {
         $req = $app->request();
         $a = '__captcha_' . $this->form->name . '_' . $this->name;
         $this->_imgUrl = $req->baseUrl() . '/' . $a;
-        $this->_captcha = $_SESSION[$a] = $this->_getCaptcha(@$_SESSION[$a]);
+//        $this->_captcha = $_SESSION[$a] = $this->_getCaptcha(@$_SESSION[$a]);
+        $this->_captcha = $app->session()->$a = $this->_getCaptcha($app->session()->$a);
 
         if (substr($req->url(), 1) === $a) {
             $app->response(new scratchAppResponseImage($this->_createImage()));
@@ -47,7 +48,7 @@ class scratchAppFormInputCaptcha extends scratchAppFormInputAbstract {
     protected function _getCaptcha($captcha = null) {
         if ($captcha && $captcha->expire > time()) return $captcha;
         return (object) array(
-            'value' => rand(100, 999),
+            'value' => rand(10000, 99999),
             'expire' => time() + 60 * 5
         );
 
