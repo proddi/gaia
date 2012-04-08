@@ -1,6 +1,6 @@
 <?php
 
-class scratchDbMiddleware {
+class scratchDbMiddleware extends scratchAppMiddleware {
 
     protected $_db;
 
@@ -12,10 +12,6 @@ class scratchDbMiddleware {
         $this->_db = $adapter;
         $app->register('query', array($this->_db, 'query'));
         $app->register('db', array($this, 'db'));
-    }
-
-    public function __invoke($app, $next) {
-        $next();
     }
 
     public function db() {

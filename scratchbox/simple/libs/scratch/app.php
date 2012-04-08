@@ -121,42 +121,44 @@ class scratchApp {
         return $this->router()->map($path, $callable)->via('GET');
     }
 
+    public function notFound($callable) {
+        return $this->router()->notFound($callable);
+    }
+
     public function stop() {
         throw new scratchAppExceptionStop();
     }
 
+    protected $_invokeLevel = 0;
+
     public function __invoke() {
-        $next;
-        $app = $this;
-        $router = $this->router();
-        $this->_router = NULL; // reset for embeddet app() calls
-//        $routes = $this->_routes;
+        $xxx = 0 === $this->_invokeLevel++;
         $mixins = $this->_mixins;
-        $mixins[] = function($app, $next) use ($router) {
+        $mixins[] = $this->router();
+        $this->_router = NULL; // reset for embeddet app() calls
+
+        if ($xxx) {
             try {
-                foreach ($router->routes() as $route) {
-                    if ($route->dispatch($app)) break;
-                }
-            } catch (scratchAppExceptionStop $e) {
+                $callable = array_shift($mixins);
+                $callable($this, $mixins);
+            } catch (Exception $e) {
+                $res = $this->response();
+                $res->clear();
+    //            $res->title('scratchApp application error');
+                $res->send(self::generateErrorMarkup($e));
             }
-        };
-        $next = function() use (&$mixins, &$app, &$next) {
-            if (count($mixins)) {
-                $mixin = array_shift($mixins);
-                $mixin($app, $next);
-            }
-        };
 
-        try {
-            $next();
-        } catch (Exception $e) {
-            $res = $app->response();
-            $res->clear();
-//            $res->title('scratchApp application error');
-            $res->send(self::generateErrorMarkup($e));
+            $this->response()->html();
+        } else {
+            try {
+                $callable = array_shift($mixins);
+                $callable($this, $mixins);
+            } catch (Exception $e) {
+                $this->_invokeLevel--;
+                throw $e;
+            }
         }
-
-        $app->response()->html();
+        $this->_invokeLevel--;
     }
 
     static protected function generateErrorMarkup(Exception $e) {

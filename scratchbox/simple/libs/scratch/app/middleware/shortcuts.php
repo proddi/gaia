@@ -1,16 +1,12 @@
 <?php
 
-class scratchAppMiddlewareShortcuts {
+class scratchAppMiddlewareShortcuts extends scratchAppMiddleware {
 
     protected $_app;
 
     public function __construct($app) {
         $this->_app = $app;
         $app->register('render', array($this, 'render'));
-    }
-
-    public function __invoke($app, $next) {
-        $next();
     }
 
     public function render($ctx, $template = NULL, $data = NULL) {

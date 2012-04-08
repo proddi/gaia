@@ -28,29 +28,37 @@ $app = new scratchApp(array(
 $app->use('scratchAppMiddlewareShortcuts');
 $app->use('scratchDbMiddleware');
 
-$app->get('/foo', function() use ($app) {
+$app->get('/foo/:bar/:param*', function($bar, $param, $app) {
     scratchModel::db($app->db()); // register global db
 
     $user = scratchModelUser::byName('Hans');
 
     $app->render('hello', array(
-//        'config' => $app->routerroute('foo-route')->url(),
+        'bar' => $bar,
+        'param' => $param,
         'user' => $user
     ));
-//    $app->stop(); // might $app->finish() / ->halt()
+//    $app->stop(); // might $app->finish() / ->halt() / ->continue()
 //    throw new Exception('Foo', 23);
 })->name('foo-route');
 
 // IDEA for subrouter
-$app->get('/sub/:foo', function($foo, $app) use ($app) {
-    $app->router(new scratchAppRouterClass('scratchController')); // mappt calls auf controller
-    $app->get('/', function() {});
+$app->get('/sub/:foo', function($foo, $app) {
+    $app->get('/sub/foo', function($app) {
+        $app->response()->send('subroute / handler');
+//        throw new Exception('Foo', 23);
+    });
     $app();
 })->name('sub-route');
 
 // index
 $app->get('/', function() use ($app) {
-    echo 'call with /foo/something';
+    $app->response()->send('call with /foo/bar/blubb/demo<br>');
+    $app->response()->send('call with /sub/foo<br>');
+});
+
+$app->notFound(function($app) {
+    $app->response->send('404 Not found!');
 });
 
 $app();

@@ -26,16 +26,28 @@ class scratchAppRoute {
         $oldUri = $request->uri();
         $oldBaseUri = $request->baseUri();
         if (preg_match($this->path, $request->uri(), $matches)) {
-            $uriLeft = $matches['_uri'];
+            $l = count($matches);
+            if (array_key_exists('_uri', $matches)) {
+                $uriLeft = $matches['_uri'];
+                $l -= 2;
+            }
+            // extrahiere matches
+            $args = array();
+            for ($i = 1; $i < $l; $i++) $args[] = $matches[$i];
+            $args[] = $app;
+
+            // modify request url's to match subroutes
+            $uriLeft = @$matches['_uri'];
             $baseUri = $request->baseUri();
 //                $baseUri = $uriLeft ? substr($request->requestUri, 0, -strlen($uriLeft)) : $req->requestUri;
 //                if ('/' !== $baseUri[strlen($baseUri)-1]) $baseUri .= '/';
-            $request->baseUri($baseUri);
-            $request->uri($uriLeft ? '/' . $uriLeft : '');
-
-            call_user_func_array($this->callable, array());
+//            $request->baseUri($baseUri);
+//            $request->uri($uriLeft ? '/' . $uriLeft : '');
 
             // execute callable
+            call_user_func_array($this->callable, $args);
+
+            // reset request url's
             $request->uri($oldUri);
             $request->baseUri($oldBaseUri);
             return true;
@@ -49,9 +61,9 @@ class scratchAppRoute {
 
     protected function _preparePath($path) {
         $path = str_replace('/', '\/', $path);
-        $path = preg_replace('/\:(\w+)/', '(?P<$1>[^\/]+)\/?', $path);
-//        $path = str_replace('*', '(?P<_uri>.*)', $path);
-        $path = '/^' . $path . '(?P<_uri>.*)$/';
+        $path = preg_replace('/\:(\w+)/', '([^\/]+)\/?', $path);
+        $path = str_replace('*', '(?P<_uri>.*)', $path);
+        $path = '/^' . $path . '$/';
         return $path;
     }
 
