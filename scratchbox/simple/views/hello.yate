@@ -4,3 +4,6 @@
 <li>config: {{ config | dump }}</li>
 <li>user: #{{ user->idx }} {{ user->name }} ({{ user->age }})</li>
 </ul>
+
+<h3>dump of user:</h3>
+{{ user | dump }}

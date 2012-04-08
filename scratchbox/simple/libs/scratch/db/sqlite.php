@@ -10,7 +10,7 @@
  *
  * @author tosa
  */
-class scratchPdoSqlite {
+class scratchDbSqlite {
 
     protected $_config;
 
@@ -27,7 +27,7 @@ class scratchPdoSqlite {
     public function query($query, $values = array()) {
         if (!$this->_dbh) $this->open();
         if (func_num_args() >= 2 && !is_array($values)) $values = array_slice (func_get_args (), 1);
-        return new scratchPdoStatement($this->_dbh, $query, $values);
+        return new scratchDbStatement($this->_dbh, $query, $values);
     }
 
     public function open() {

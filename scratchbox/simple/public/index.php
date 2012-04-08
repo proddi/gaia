@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * TODO:
+ * - router extrahieren ... wegen ... kann auch nen filerouter geben, der auf FS mappt
+ * - '/sub/:foo' => function($foo, $app)
+ */
+
 require_once('../../../libs/gaia.php');
 GAIA::registerNamespace('../libs/scratch', 'scratch');
 
@@ -13,30 +19,39 @@ exit; /* */
 
 /* Middleware setup with custom functions: */
 $app = new scratchApp(array(
-    'pdo' => 'scratchPdoSqlite',
-    'pdo.config' => array(
+    'db' => 'scratchDbSqlite',
+    'db.config' => array(
         'dbname' => '../data/sqlite.sqlite'
     )
 ));
 
 $app->use('scratchAppMiddlewareShortcuts');
-$app->use('scratchAppMiddlewarePdo');
+$app->use('scratchDbMiddleware');
 
 $app->get('/foo', function() use ($app) {
-    $user = $app->query('SELECT idx, name, age FROM users WHERE idx=?', 2)->obj();
+    scratchModel::db($app->db()); // register global db
+
+    $user = scratchModelUser::byName('Hans');
+
     $app->render('hello', array(
-        'config' => $app->route('foo-route')->url(),
+//        'config' => $app->routerroute('foo-route')->url(),
         'user' => $user
     ));
-//    $app->stop();
+//    $app->stop(); // might $app->finish() / ->halt()
 //    throw new Exception('Foo', 23);
 })->name('foo-route');
 
 // IDEA for subrouter
-$app->get('/sub', function() use ($app) {
-    $app->get('/bar', function() {});
+$app->get('/sub/:foo', function($foo, $app) use ($app) {
+    $app->router(new scratchAppRouterClass('scratchController')); // mappt calls auf controller
+    $app->get('/', function() {});
     $app();
 })->name('sub-route');
+
+// index
+$app->get('/', function() use ($app) {
+    echo 'call with /foo/something';
+});
 
 $app();
 exit; /* */

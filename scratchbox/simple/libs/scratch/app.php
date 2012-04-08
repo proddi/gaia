@@ -14,6 +14,11 @@ class scratchApp {
     protected $_routes = array();
 
     /**
+     * @var scratchAppRouter
+     */
+    protected $_router;
+
+    /**
      * @var scratchAppRequest
      */
     protected $request;
@@ -31,7 +36,7 @@ class scratchApp {
         $this->config(array_merge(array(
             'view' => 'scratchViewYate'
         ), $config));
-        $this->register('use', array($this, 'mixin'));
+        $this->register('use', array($this, 'middleware'));
     }
 
     public function config($key = NULL, $value = NULL) {
@@ -48,7 +53,7 @@ class scratchApp {
         return $this->config;
     }
 
-    public function mixin($mixin) {
+    public function middleware($mixin) {
         if (is_string($mixin)) {
             $mixin = new $mixin($this);
         }
@@ -65,6 +70,17 @@ class scratchApp {
             return call_user_func_array($callable, $args);
         }
         throw new BadMethodCallException('Call to undefined method ' . __CLASS__ . '::' . $method. '()');
+    }
+
+    /**
+     * Get the Router object
+     * @return scratchAppRouter
+     */
+    public function router() {
+        if (!$this->_router) {
+            $this->_router = new scratchAppRouter();
+        }
+        return $this->_router;
     }
 
     /**
@@ -101,18 +117,8 @@ class scratchApp {
         return $this->view;
     }
 
-    protected $_namedRoutes = array();
-    public function route($name, scratchAppRoute $route = NULL) {
-        if ($route) {
-            $this->_namedRoutes[$name] = $route;
-        }
-        return $this->_namedRoutes[$name];
-    }
-
     public function get($path, $callable) {
-        $route = new scratchAppRoute($this, $path, $callable);
-        $this->_routes[] = $route;
-        return $route;
+        return $this->router()->map($path, $callable)->via('GET');
     }
 
     public function stop() {
@@ -122,11 +128,13 @@ class scratchApp {
     public function __invoke() {
         $next;
         $app = $this;
-        $routes = $this->_routes;
+        $router = $this->router();
+        $this->_router = NULL; // reset for embeddet app() calls
+//        $routes = $this->_routes;
         $mixins = $this->_mixins;
-        $mixins[] = function($app, $next) use ($routes) {
+        $mixins[] = function($app, $next) use ($router) {
             try {
-                foreach ($routes as $route) {
+                foreach ($router->routes() as $route) {
                     if ($route->dispatch($app)) break;
                 }
             } catch (scratchAppExceptionStop $e) {

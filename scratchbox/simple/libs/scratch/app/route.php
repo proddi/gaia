@@ -2,18 +2,22 @@
 
 class scratchAppRoute {
 
-    protected $_app;
+    protected $_router;
     protected $path;
     protected $callable;
 
-    public function __construct($app, $path, $callable) {
-        $this->_app = $app;
+    public function __construct($router, $path, $callable) {
+        $this->_router = $router;
         $this->path = $this->_preparePath($path);
         $this->callable = $callable;
     }
 
+    public function via($method) {
+        return $this;
+    }
+
     public function name($name) {
-        $this->_app->route($name, $this);
+        $this->_router->namedRoute($name, $this);
         return $this;
     }
 

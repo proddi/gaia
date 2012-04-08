@@ -1,6 +1,6 @@
 <?php
 
-class scratchPdoStatement {
+class scratchDbStatement {
 
     protected $_dbh;
     protected $_sth;
