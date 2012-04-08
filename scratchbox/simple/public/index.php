@@ -2,8 +2,6 @@
 
 /**
  * TODO:
- * - router extrahieren ... wegen ... kann auch nen filerouter geben, der auf FS mappt
- * - '/sub/:foo' => function($foo, $app)
  */
 
 require_once('../../../libs/gaia.php');
@@ -43,8 +41,8 @@ $app->get('/foo/:bar/:param*', function($bar, $param, $app) {
 })->name('foo-route');
 
 // IDEA for subrouter
-$app->get('/sub/:foo', function($foo, $app) {
-    $app->get('/sub/foo', function($app) {
+$app->get('/sub/:foo*', function($foo, $app) {
+    $app->get('/', function($app) {
         $app->response()->send('subroute / handler');
 //        throw new Exception('Foo', 23);
     });

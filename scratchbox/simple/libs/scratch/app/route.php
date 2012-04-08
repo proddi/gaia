@@ -26,23 +26,23 @@ class scratchAppRoute {
         $oldUri = $request->uri();
         $oldBaseUri = $request->baseUri();
         if (preg_match($this->path, $request->uri(), $matches)) {
+
             $l = count($matches);
             if (array_key_exists('_uri', $matches)) {
                 $uriLeft = $matches['_uri'];
                 $l -= 2;
+            } else {
+                $uriLeft = '';
             }
+
             // extrahiere matches
             $args = array();
             for ($i = 1; $i < $l; $i++) $args[] = $matches[$i];
             $args[] = $app;
 
             // modify request url's to match subroutes
-            $uriLeft = @$matches['_uri'];
-            $baseUri = $request->baseUri();
-//                $baseUri = $uriLeft ? substr($request->requestUri, 0, -strlen($uriLeft)) : $req->requestUri;
-//                if ('/' !== $baseUri[strlen($baseUri)-1]) $baseUri .= '/';
-//            $request->baseUri($baseUri);
-//            $request->uri($uriLeft ? '/' . $uriLeft : '');
+            $request->baseUri($oldBaseUri . substr($oldUri, 0, strlen($oldUri) - strlen($uriLeft) - ($uriLeft ? 1 : 0)));
+            $request->uri('/' . $uriLeft);
 
             // execute callable
             call_user_func_array($this->callable, $args);

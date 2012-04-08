@@ -2,30 +2,32 @@
 
 class scratchAppRequest {
 
-    protected $baseUri;
-    protected $uri;
+    protected $_baseUri;
+    protected $_uri;
 
     public function __construct() {
-        $this->uri = array_key_exists('PATH_INFO', $_SERVER) ? $_SERVER['PATH_INFO'] : '';
+        $this->_uri = array_key_exists('PATH_INFO', $_SERVER) ? $_SERVER['PATH_INFO'] : '';
         // Fix: workaround for lighttp rewrite rules, pse check for better solution
-        if ('/index.php' === substr($this->uri,0, 10))
-            $this->uri = substr($this->uri, 10);
+        if ('/index.php' === substr($this->_uri,0, 10))
+            $this->_uri = substr($this->uri, 10);
 
-//        $i = strrpos($_SERVER['SCRIPT_NAME'], '/') + 1;
-//        $this->baseUri = substr($_SERVER['REQUEST_URI'], 0, $i);
+        $this->_uri = rtrim($this->_uri, '/');
+        $this->_baseUri = dirname($_SERVER['SCRIPT_NAME']);
     }
-    public function method() {}
+    public function method() {
+        return @$_SERVER['REQUEST_METHOD'];
+    }
 
     public function headers() {}
 
     public function uri($url = NULL) {
-        if (isset($url)) $this->uri = $url;
-        return $this->uri;
+        if (isset($url)) $this->_uri = $url;
+        return $this->_uri;
     }
 
     public function baseUri($baseUrl = NULL) {
-        if (isset($baseUrl)) $this->baseUri = $baseUrl;
-        return $this->baseUri;
+        if (isset($baseUrl)) $this->_baseUri = $baseUrl;
+        return $this->_baseUri;
     }
 }
 
