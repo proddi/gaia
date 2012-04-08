@@ -1,0 +1,8 @@
+<h2>scratch Form example</h2>
+{{ form->begin }}
+<ul>
+{{ for input in form }}
+    <li>{{ input }} ({{ input->name }}) ({{ input->errors | join(', ') }})</li>
+{{ end }}
+</ul>
+{{ form->end }}

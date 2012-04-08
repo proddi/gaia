@@ -2,32 +2,61 @@
 
 class scratchAppRequest {
 
-    protected $_baseUri;
-    protected $_uri;
+    protected $_baseUrl;
+    protected $_url;
+    protected $_method;
 
     public function __construct() {
-        $this->_uri = array_key_exists('PATH_INFO', $_SERVER) ? $_SERVER['PATH_INFO'] : '';
+        $this->_url = array_key_exists('PATH_INFO', $_SERVER) ? $_SERVER['PATH_INFO'] : '';
         // Fix: workaround for lighttp rewrite rules, pse check for better solution
-        if ('/index.php' === substr($this->_uri,0, 10))
-            $this->_uri = substr($this->uri, 10);
+        if ('/index.php' === substr($this->_url,0, 10))
+            $this->_url = substr($this->url, 10);
 
-        $this->_uri = rtrim($this->_uri, '/');
-        $this->_baseUri = dirname($_SERVER['SCRIPT_NAME']);
+        if (!($this->_url = rtrim($this->_url, '/'))) {
+            $this->_url = '/';
+        }
+        $this->_baseUrl = dirname($_SERVER['SCRIPT_NAME']);
+
+        $this->_method = @$_SERVER['REQUEST_METHOD'];
     }
     public function method() {
         return @$_SERVER['REQUEST_METHOD'];
     }
 
-    public function headers() {}
-
-    public function uri($url = NULL) {
-        if (isset($url)) $this->_uri = $url;
-        return $this->_uri;
+    /**
+     * Is this a GET request?
+     * @return bool
+     */
+    public function isGet() {
+        return 'GET' === $this->_method;
     }
 
-    public function baseUri($baseUrl = NULL) {
-        if (isset($baseUrl)) $this->_baseUri = $baseUrl;
-        return $this->_baseUri;
+    /**
+     * Is this a POST request?
+     * @return bool
+     */
+    public function isPost() {
+        return 'POST' === $this->_method;
+    }
+
+    public function post($key) {
+        return @$_POST[$key];
+    }
+
+    public function headers() {}
+
+    public function url($url = NULL) {
+        if (isset($url)) $this->_url = $url;
+        return $this->_url;
+    }
+
+    public function baseUrl($baseUrl = NULL) {
+        if (isset($baseUrl)) $this->_baseUrl = $baseUrl;
+        return $this->_baseUrl;
+    }
+
+    public function requestUrl() {
+        return $_SERVER['REQUEST_URI'];
     }
 }
 

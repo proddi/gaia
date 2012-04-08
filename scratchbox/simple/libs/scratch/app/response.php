@@ -35,7 +35,7 @@ class scratchAppResponse {
         return $this->_status;
     }
 
-    public function html() {
+    public function streamOut() {
     	$lf = "\n";
         echo '<!DOCTYPE html>' . $lf; // just html5
         echo '<head>' . $lf;

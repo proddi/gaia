@@ -11,8 +11,6 @@ class scratchApp {
 
     protected $config = array();
 
-    protected $_routes = array();
-
     /**
      * @var scratchAppRouter
      */
@@ -98,7 +96,8 @@ class scratchApp {
      * Get the Response object
      * @return scratchAppResponse
      */
-    public function response() {
+    public function response($response = NULL) {
+        if ($response) $this->response = $response;
         if (!$this->response) {
             $this->response = new scratchAppResponse();
         }
@@ -121,8 +120,8 @@ class scratchApp {
         return $this->router()->map($path, $callable)->via('GET');
     }
 
-    public function notFound($callable) {
-        return $this->router()->notFound($callable);
+    public function on404($callable) {
+        return $this->router()->on404($callable);
     }
 
     public function stop() {
@@ -148,7 +147,7 @@ class scratchApp {
                 $res->send(self::generateErrorMarkup($e));
             }
 
-            $this->response()->html();
+            $this->response()->streamOut();
         } else {
             try {
                 $callable = array_shift($mixins);

@@ -10,7 +10,7 @@ class scratchAppRouter extends scratchAppMiddleware {
     /**
      * @var callable
      */
-    protected $_notFound;
+    protected $_on404;
 
     public function routes() {
         return $this->_routes;
@@ -26,8 +26,9 @@ class scratchAppRouter extends scratchAppMiddleware {
      *
      * @param callable $callback
      */
-    public function notFound($callback) {
-        $this->_notFound = $callback;
+    public function on404($callback) {
+        if (isset($callback)) $this->_on404 = $callback;
+        return $this->_on404;
     }
 
     protected $_namedRoutes = array();
@@ -40,8 +41,14 @@ class scratchAppRouter extends scratchAppMiddleware {
 
     public function __invoke($app, $stack) {
         try {
+            $dispatched;
             foreach ($this->routes() as $route) {
-                if ($route->dispatch($app)) break;
+                if (($dispatched = $route->dispatch($app))) break;
+            }
+            if (!$dispatched) {
+                if (($callable = $this->_on404)) {
+                    $callable($app);
+                }
             }
         } catch (scratchAppExceptionStop $e) {
         }
