@@ -2,43 +2,28 @@
 
 require_once('../../../libs/gaia.php');
 
-// add exception handler
-gaiaServer::onException(function($req, $res, Exception $e) {
-    $res->error($e->getMessage().' Exception '.$e->getFile());
-    $res->finish(gaiaView::render('error.500', array('error' => $e)));
+GAIA::registerNamespace('../../../scratchbox/simple/libs/scratch', 'scratch');
+GAIA::registerNamespace('../controller', 'controller');
+
+$app = new scratchApp();
+
+// have inline function that return something via view
+$app->get('/hello/:name*', function($name, scratchApp $app) {
+    $app->response()->send("Hello $name");
 });
 
-gaiaServer::run(
-        // mixin console support
-        gaiaLog::consoleSupport(),
-        // log output
-        function($req, $res) { $res->log('Ohhh\' wie ist das schön...'); },
-        // a router
-        gaiaServer::router(array(
-                '/hello/:id*' => function($req, $res) {
-                    $res->finish(gaiaView::render('hello', array('name' => $req->params->id)));
-                },
-                '/exception' => function($req, $res) { throw new Exception('Foo', 23); },
-                '*' => function($req, $res) { $res->log(2); }
-            )),
-        // middleware exception handling
-        gaiaServer::tryCatch(
-                function($req, $res) { $res->log('tryCatch.1');},
-                function($req, $res) { $res->log('tryCatch.2'); throw new Exception('Foo'); /* */},
-                function($req, $res) { $res->log('tryCatch.3');},
-                function($req, $res, $e) { $res->error('tryCatch.ex', $e->getMessage()); }
-            ),
-        // middleware can also be an array
-        array(
-                function($req, $res) { $res->log(4.1); },
-                function($req, $res) { $res->log(4.2); },
-                // breaking chain of middlewares
-                function($req, $res) { $res->log(4.3); return gaiaServer::BREAKCHAIN; },
-                function($req, $res) { $res->log(4.4, 'I will never execute.'); }
-            ),
+// show default exception handling
+$app->get('/exception', function(scratchApp $app) {
+    throw new Exception('Foo');
+});
 
-        // using gaiaView
-        function($req, $res) { $res->send(gaiaView::render('index')); }
-    );
+// using lazy loading
+$app->get('/blog/:post', array('controllerBlog', 'proceed'));
 
-?>
+// index using view
+$app->get('/', function(scratchApp $app) {
+    $app->response()->send($app->view()->render('index'));
+});
+
+// run app instance
+$app();

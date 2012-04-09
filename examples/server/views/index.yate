@@ -3,4 +3,5 @@
 <ul>
     <li><a href="hello/Hans">navigate to /hello/Hans</a></li>
     <li><a href="exception">navigate to /exception</a></li>
+    <li><a href="blog/today">navigate to /blog/today</a></li>
 </ul>
