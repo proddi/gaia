@@ -3,13 +3,18 @@
 error_reporting(E_ALL | E_STRICT);
 
 /**
- * Description of app
+ * RESTful rails style application router.
  *
+ * @package gaia
+ * @subpackage app
  * @author proddi@splatterladder.com
  */
 class scratchApp {
 
-    protected $config = array();
+    /**
+     * @var array
+     */
+    protected $_config = array();
 
     /**
      * @var scratchAppRouter
@@ -19,14 +24,17 @@ class scratchApp {
     /**
      * @var scratchAppRequest
      */
-    protected $request;
+    protected $_request;
 
     /**
      * @var scratchAppResponse
      */
-    protected $response;
+    protected $_response;
 
-    protected $view;
+    /**
+     * @var scratchViewYate
+     */
+    protected $_view;
 
     protected $_mixins = array();
 
@@ -37,20 +45,30 @@ class scratchApp {
         $this->register('use', array($this, 'middleware'));
     }
 
+    /**
+     * Reads or writes configuration.
+     * @param type $key
+     * @param type $value
+     * @return mixed
+     */
     public function config($key = NULL, $value = NULL) {
         $numArgs = func_num_args();
         if (2 === $numArgs) {
-            $this->config[$key] = $value;
+            $this->_config[$key] = $value;
         } else if (1 === $numArgs) {
             if (is_array($key)) {
-                return $this->config = $key;
+                return $this->_config = $key;
             } else {
-                return $this->config[$key];
+                return $this->_config[$key];
             }
         }
-        return $this->config;
+        return $this->_config;
     }
 
+    /**
+     * Register middleware
+     * @param string|scratchAppMiddleware $mixin
+     */
     public function middleware($mixin) {
         if (is_string($mixin)) {
             $mixin = new $mixin($this);
@@ -58,7 +76,16 @@ class scratchApp {
         $this->_mixins[] = $mixin;
     }
 
+    /**
+     * @var array
+     */
     protected $_customMethods = array();
+
+    /**
+     * Registers custom function on application object to be available in life cycle.
+     * @param string $method
+     * @param callable $callback
+     */
     public function register($method, $callback) {
         $this->_customMethods[$method] = $callback;
     }
@@ -86,10 +113,10 @@ class scratchApp {
      * @return scratchAppRequest
      */
     public function request() {
-        if (!$this->request) {
-            $this->request = new scratchAppRequest();
+        if (!$this->_request) {
+            $this->_request = new scratchAppRequest();
         }
-        return $this->request;
+        return $this->_request;
     }
 
     /**
@@ -97,11 +124,11 @@ class scratchApp {
      * @return scratchAppResponse
      */
     public function response($response = NULL) {
-        if ($response) $this->response = $response;
-        if (!$this->response) {
-            $this->response = new scratchAppResponse();
+        if ($response) $this->_response = $response;
+        if (!$this->_response) {
+            $this->_response = new scratchAppResponse();
         }
-        return $this->response;
+        return $this->_response;
     }
 
     /**
@@ -109,11 +136,11 @@ class scratchApp {
      * @return scratchAppView
      */
     public function view() {
-        if (!$this->view) {
+        if (!$this->_view) {
             $view = $this->config('view');
-            $this->view = is_string($view) ? new $view() : $view;
+            $this->_view = is_string($view) ? new $view() : $view;
         }
-        return $this->view;
+        return $this->_view;
     }
 
     public function get($path, $callable) {
@@ -127,6 +154,10 @@ class scratchApp {
     public function stop() {
         throw new scratchAppExceptionStop();
     }
+
+//    public function halt($status, $message) {
+//        $this->response()->status($status);
+//    }
 
     protected $_invokeLevel = 0;
 
@@ -171,5 +202,3 @@ class scratchApp {
 }
 
 class scratchAppExceptionStop extends Exception{}
-
-?>
