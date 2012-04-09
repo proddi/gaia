@@ -52,7 +52,7 @@ $app->get('/form*', function($app) {
             ->validate(gaiaForm::validateEmail('looks not like a valid email address')),
         scratchAppForm::textarea('text', array('watermark' => 'you@email.com'))
             ->validate(gaiaForm::validateMinLength(10, 'min 10 characters')),
-        new scratchAppFormInputCaptcha('captcha'),
+        new scratchAppFormCaptcha('captcha'),
         scratchAppForm::submit('submit', array('value' => 'absenden'))
     )->onSubmit(function($form, $app) {
         echo "form->onSubmit() name={$form->login->value}<br>\n";

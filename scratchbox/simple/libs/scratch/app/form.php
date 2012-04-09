@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Form class
+ *
+ * @package gaia
+ * @subpackage app
+ * @author proddi@splatterladder.com
+ */
 class scratchAppForm implements Iterator {
 
     public $name = 'default';
@@ -13,12 +20,9 @@ class scratchAppForm implements Iterator {
     public $end = '</form>';
 
     public function isSubmit() { return $this->_isSubmit; }
-    public function __construct($name, array $mw = array() /* middlewares */) {
+    public function __construct($name) {
         $this->name = $name;
-        $this->add(new scratchAppFormInputHidden('__gaiaFormId', array('value' => $name)));
-        foreach ($mw as $input) {
-            if ($input instanceof gaiaFormInputAbstract) $this->add($input);
-        }
+        $this->add(new scratchAppFormHidden('__gaiaFormId', array('value' => $name)));
     }
 
     public function proceed($app) {
@@ -51,43 +55,11 @@ class scratchAppForm implements Iterator {
         }
     }
 
-    public function __invoke(&$req, &$res, &$data) {
-        // register form
-        if (!isset($req->forms)) $res->forms = new gaiaInvokable();
-        $req->forms->{$this->name} = $this;
-
-        $this->begin = '<form action="' . $req->requestUri . '" method="post">';
-
-        // TODO: path check, might other form was submitted, not me
-        if ($req->isPost() && ($req->post->__gaiaFormId === $this->name)) {
-            $this->_isSubmit = true;
-        }
-
-        // call the fields and exit if needed
-        if (gaiaServer::BREAKCHAIN === gaiaServer::mw($this->_fields, $req, $res, $data)
-                || $res->isFinish()) {
-            return;
-        }
-
-        // validate
-        if ($this->_isSubmit) {
-            $this->valid = true;
-            foreach ($this->_fields as $input) {
-                $this->valid &= $input->validateNow();
-            }
-
-            // and onSubmit
-            if ($this->valid && $this->_isSubmit) {
-                foreach ($this->_onSubmits as $cb) $cb($req, $res, $data);
-            }
-        }
-    }
-
     public function __toString() {
         return '[a form "' . $this->name .'"]';
     }
 
-    public function add(scratchAppFormInputAbstract $input) {
+    public function add(scratchAppFormAbstract $input) {
         $this->_fields[] = $input;
         $this->{$input->name} = $input;
         $input->form($this);
@@ -128,17 +100,15 @@ class scratchAppForm implements Iterator {
     final function valid() { return isset($this->_fields[$this->_position]); }
 
     static public function text($name, array $cfg = array()) {
-        return new scratchAppFormInputText($name, $cfg);
+        return new scratchAppFormText($name, $cfg);
     }
 
     static public function textarea($name, array $cfg = array()) {
-        return new scratchAppFormInputTextarea($name, $cfg);
+        return new scratchAppFormTextarea($name, $cfg);
     }
 
     static public function submit($name, array $cfg = array()) {
-        return new scratchAppFormInputSubmit($name, $cfg);
+        return new scratchAppFormSubmit($name, $cfg);
     }
 
 }
-
-?>
