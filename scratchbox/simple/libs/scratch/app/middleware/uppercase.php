@@ -1,6 +1,6 @@
 <?php
 
-class scratchAppMiddlewareUppercase {
+class scratchAppMiddlewareUppercase extends scratchAppMiddleware {
 
     public function __invoke($app, $stack) {
         parent::__invoke($app, $stack);
