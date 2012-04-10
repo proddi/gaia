@@ -6,6 +6,7 @@ class scratchAppRoute {
     protected $path;
     protected $callable;
     protected $_methods;
+    protected $_conditions = array();
 
     public function __construct($router, $path, $callable) {
         $this->_router = $router;
@@ -13,17 +14,37 @@ class scratchAppRoute {
         $this->callable = $callable;
     }
 
-    public function via($method) {
+    /**
+     * Restrict that route to the given method(s).
+     * @param string $method
+     * @return scratchAppRoute
+     */
+    public function via($method/* method2, method3, ...*/) {
         $this->_methods = func_get_args();
         return $this;
     }
 
+    /**
+     * Set a name for that route to get an access point for the url helper.
+     * @param string $name
+     * @return scratchAppRoute
+     */
     public function name($name) {
         $this->_router->namedRoute($name, $this);
         return $this;
     }
 
-    public function dispatch(scratchApp $app) {
+    /**
+     * Add a condition to the route. Every condition must be true for that route.
+     * @param callable $condition
+     * @return scratchAppRoute
+     */
+    public function when($condition) {
+        $this->_conditions[] = $condition;
+        return $this;
+    }
+
+    public function dispatch($app) {
         if ($this->_methods && !in_array($app->request()->method(), $this->_methods)) {
             return;
         }
@@ -45,6 +66,11 @@ class scratchAppRoute {
             $args = array();
             for ($i = 1; $i < $l; $i++) $args[] = $matches[$i];
             $args[] = $app;
+
+            // check conditions
+            $ok = true;
+            foreach ($this->_conditions as $condition) $ok &= call_user_func($condition);
+            if (!$ok) return false; // not valid
 
 //            echo "->" . $request->baseUrl() . "<br>\n";
 //            echo "->" . $request->url() . "<br>\n";
@@ -78,5 +104,3 @@ class scratchAppRoute {
     }
 
 }
-
-?>

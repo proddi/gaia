@@ -24,7 +24,8 @@ $app->get('/model/:name*', function($name, scratchApp $app) {
     ));
 //    $app->stop(); // might $app->finish() / ->halt() / ->continue()
 //    throw new Exception('Foo', 23);
-})->name('foo-route');
+})->name('foo-route')
+  ->when(function() use ($app) { return !$app->request()->isMobile(); });
 
 // IDEA for subrouter   /sub/something/module
 $app->get('/sub/:foo*', function($foo, scratchApp $app) {
@@ -74,7 +75,7 @@ $app->get('/session/destroy', function(scratchApp $app) {
 
 // index
 $app->get('/', function(scratchApp $app) {
-    $app->response()->send('call with /foo/bar/blubb/demo<br>');
+    $app->response()->send('call with /model/Hans<br>');
     $app->response()->send('call with /sub/foo<br>');
 });
 
