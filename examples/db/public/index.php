@@ -1,62 +1,32 @@
 <?php
 require_once('../../../libs/gaia.php');
+GAIA::registerNamespace('../../../scratchbox/simple/libs/scratch', 'scratch');
 
-// Configure
-$config = array (
-    'adapter' => 'pdoSqlite',
-    'database' => array(
-        'host' => 'localhost',
-        'dbname' => '../data/sqlite.sqlite',
-        'username' => 'root',
-        'password' => ''
-    )
-);
+$app = new scratchApp(array(
+    'pdo.dsn' => 'sqlite:../data/sqlite.sqlite'
+));
 
-gaiaDb::setConfig($config);
+$app->use('scratchAppMiddlewarePdo');
 
-try {
-    $q = gaiaDb::select('SELECT idx, name FROM users');
-    while(list($idx, $name) = $q->fetch(gaiaDb::fetchNum)) {
-        echo '<li>'.$name.'</li>';
-    }
-    $q->free();
+$app->get('/', function(scratchApp $app) {
+    // simple query
+    $sql = 'SELECT idx, name FROM users';
+    $app->response()->send($app->view()->render('example', array(
+        'title' => 'Simple query',
+        'desc' => 'This example shows the normal query function. No execute() is needed. Data gets fetched as associative array.',
+        'code' => '$app->query("' . $sql . '")->allAssoc()',
+        'data' => $app->query($sql)->allAssoc()
+    )));
 
-    fetchViaPreparedStatement();
-    fetchViaPreparedStatement2();
-    fetchViaPdo();
-    fetchIntoObject();
+    // prepared statement
+    $sql = 'SELECT * FROM users WHERE name LIKE ?';
+    $app->response()->send($app->view()->render('example', array(
+        'title' => 'Prepared statement',
+        'desc' => 'This example shows the chaining of execute() function and object fetching.',
+        'code' => '$app->prepare("' . $sql . '")->execute("%a%")->allObj()',
+        'data' => $app->prepare($sql)->execute('%a%')->allObj()
+    )));
 
-} catch (gaiaDbException $e) {
-    echo "<pre>gaiaDbException: " . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>';
-}
+});
 
-function fetchViaPreparedStatement() {
-    $q = gaiaDb::prepare('SELECT idx, name FROM users WHERE idx=?');
-    $q->execute(3);
-    while(list($idx, $name) = $q->fetch(gaiaDb::fetchNum)) {
-        echo '<li>'.$name.'</li>';
-    }
-}
-
-function fetchViaPreparedStatement2() {
-    $q = gaiaDb::query('SELECT idx, name FROM users WHERE 1');
-    while(list($idx, $name) = $q->fetch(gaiaDb::fetchNum)) {
-        echo '<li>'.$name.'</li>';
-    }
-}
-
-function fetchViaPdo() {
-    $q = gaiaDb::query('SELECT idx, name FROM users WHERE 1');
-    foreach ($q->fetchAll(gaiaDb::fetchObj) as $item) {
-        echo '<li>'.$item->name.'</li>';
-    }
-}
-
-function fetchIntoObject() {
-    $q = gaiaDb::query('SELECT idx, name FROM users WHERE 1');
-    foreach ($q->fetchAll(gaiaDb::fetchObj) as $item) {
-        echo '<li>'.$item->name.'</li>';
-    }
-}
-
-?>
+$app();

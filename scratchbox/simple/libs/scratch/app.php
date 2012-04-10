@@ -60,7 +60,7 @@ class scratchApp {
             if (is_array($key)) {
                 return $this->_config = $key;
             } else {
-                return $this->_config[$key];
+                return @$this->_config[$key];
             }
         }
         return $this->_config;
