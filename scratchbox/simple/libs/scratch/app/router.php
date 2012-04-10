@@ -40,17 +40,14 @@ class scratchAppRouter extends scratchAppMiddleware {
     }
 
     public function __invoke($app, $stack) {
-        try {
-            $dispatched;
-            foreach ($this->routes() as $route) {
-                if (($dispatched = $route->dispatch($app))) break;
+        $dispatched;
+        foreach ($this->routes() as $route) {
+            if (($dispatched = $route->dispatch($app))) break;
+        }
+        if (!$dispatched) {
+            if (($callable = $this->_on404)) {
+                $callable($app);
             }
-            if (!$dispatched) {
-                if (($callable = $this->_on404)) {
-                    $callable($app);
-                }
-            }
-        } catch (scratchAppExceptionStop $e) {
         }
         parent::__invoke($app, $stack);
     }

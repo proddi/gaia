@@ -19,7 +19,7 @@ $app->use('scratchDbMiddleware');
 $app->use('scratchAppFormMiddleware');
 $app->use('scratchAppMiddlewareSession');
 
-$app->get('/foo/:bar/:param*', function($bar, $param, $app) {
+$app->get('/foo/:bar/:param*', function($bar, $param, scratchApp $app) {
     scratchModel::db($app->db()); // register global db
 
     $user = scratchModelUser::byName('Hans');
@@ -33,17 +33,18 @@ $app->get('/foo/:bar/:param*', function($bar, $param, $app) {
 //    throw new Exception('Foo', 23);
 })->name('foo-route');
 
-// IDEA for subrouter
-$app->get('/sub/:foo*', function($foo, $app) {
-    $app->get('/', function($app) {
+// IDEA for subrouter   /sub/something/module
+$app->get('/sub/:foo*', function($foo, scratchApp $app) {
+    $app->get('/', function(scratchApp $app) {
         $app->response()->send('subroute / handler');
-//        throw new Exception('Foo', 23);
+        $app->stop();
+        throw new Exception('Foo', 23);
     });
     $app();
 })->name('sub-route');
 
 // index
-$app->get('/form*', function($app) {
+$app->get('/form*', function(scratchApp $app) {
     $form = $app->form('postAsGuest',
         scratchAppForm::text('login', array('value' => 'name'))
             ->validate(gaiaForm::validateMinLength(5, 'min 5 characters'))
@@ -53,6 +54,7 @@ $app->get('/form*', function($app) {
         scratchAppForm::textarea('text', array('watermark' => 'you@email.com'))
             ->validate(gaiaForm::validateMinLength(10, 'min 10 characters')),
         new scratchAppFormCaptcha('captcha'),
+        new scratchAppFormCaptcha('captcha2'),
         scratchAppForm::submit('submit', array('value' => 'absenden'))
     )->onSubmit(function($form, $app) {
         echo "form->onSubmit() name={$form->login->value}<br>\n";
@@ -67,23 +69,23 @@ $app->get('/form*', function($app) {
     ));
 });
 
-$app->get('/session', function($app) {
+$app->get('/session', function(scratchApp $app) {
     $app->session()->view++;
     echo 'Visit #' . $app->session()->view . " (/session/destroy to remove session data)" . "<br>\n";
 });
-$app->get('/session/destroy', function($app) {
+$app->get('/session/destroy', function(scratchApp $app) {
     $app->session()->destroy();
     echo 'session destroyed' . "<br>\n";
 });
 
 
 // index
-$app->get('/', function($app) {
+$app->get('/', function(scratchApp $app) {
     $app->response()->send('call with /foo/bar/blubb/demo<br>');
     $app->response()->send('call with /sub/foo<br>');
 });
 
-$app->on404(function($app) {
+$app->on404(function(scratchApp $app) {
     $app->response()->send('404 Not found!');
 });
 

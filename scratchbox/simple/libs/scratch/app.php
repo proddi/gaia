@@ -180,6 +180,8 @@ class scratchApp {
 
                 $callable = array_shift($mixins);
                 $callable($this, $mixins);
+            } catch (scratchAppExceptionStop $e) {
+
             } catch (Exception $e) {
                 $res = $this->response();
                 $res->clear();
