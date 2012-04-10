@@ -16,6 +16,16 @@ abstract class scratchModel {
         return intval($data);
     }
 
+    // pdo interface
+    protected $_pdo;
+    public function pdo($pdo = null) {
+        if (isset($pdo)) {
+            $this->_pdo = $pdo;
+            return $this;
+        }
+        return $this->_pdo;
+    }
+
     // model interface
 
     static protected $keyLoader = array();
@@ -75,5 +85,3 @@ abstract class scratchModel {
     }
 
 }
-
-?>

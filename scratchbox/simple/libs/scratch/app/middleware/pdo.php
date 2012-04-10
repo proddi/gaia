@@ -34,10 +34,10 @@ class scratchAppMiddlewarePdo extends scratchAppMiddleware {
  *
  * data fetchers:
  *   - obj()       = ->fetch(PDO::FETCH_OBJ)
- *   - assoc()     = ->fetch(PDO::FETCH_ASSOC)
+ *   - map()       = ->fetch(PDO::FETCH_ASSOC)
  *   - values()    = ->fetch(PDO::FETCH_NUM)
  *   - allObj()    = ->fetchAll(PDO::FETCH_OBJ)
- *   - allAssoc()  = ->fetchAll(PDO::FETCH_ASSOC)
+ *   - allMap()    = ->fetchAll(PDO::FETCH_ASSOC)
  *   - allValues() = ->fetchAll(PDO::FETCH_NUM)
  */
 class __pdostatementwrapper__ {
@@ -67,7 +67,7 @@ class __pdostatementwrapper__ {
         return $this->_stmt->fetch(PDO::FETCH_OBJ);
     }
 
-    public function assoc() {
+    public function map() {
         return $this->_stmt->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -79,7 +79,7 @@ class __pdostatementwrapper__ {
         return $this->_stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
-    public function allAssoc() {
+    public function allMap() {
         return $this->_stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

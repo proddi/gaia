@@ -14,8 +14,8 @@ $app->get('/', function(scratchApp $app) {
     $app->response()->send($app->view()->render('example', array(
         'title' => 'Simple query',
         'desc' => 'This example shows the normal query function. No execute() is needed. Data gets fetched as associative array.',
-        'code' => '$app->query("' . $sql . '")->allAssoc()',
-        'data' => $app->query($sql)->allAssoc()
+        'code' => '$app->query("' . $sql . '")->allMap()',
+        'data' => $app->query($sql)->allMap()
     )));
 
     // prepared statement

@@ -2,31 +2,24 @@
 /**
  * TODO:
  */
-
 require_once('../../../libs/gaia.php');
 GAIA::registerNamespace('../libs/scratch', 'scratch');
 
 /* Middleware setup with custom functions: */
 $app = new scratchApp(array(
-    'db' => 'scratchDbSqlite',
-    'db.config' => array(
-        'dbname' => '../data/sqlite.sqlite'
-    )
+    'pdo.dsn' => 'sqlite:../data/sqlite.sqlite'
 ));
 
 $app->use('scratchAppMiddlewareShortcuts');
-$app->use('scratchDbMiddleware');
+$app->use('scratchAppMiddlewarePdo');
 $app->use('scratchAppFormMiddleware');
 $app->use('scratchAppMiddlewareSession');
 
-$app->get('/foo/:bar/:param*', function($bar, $param, scratchApp $app) {
-    scratchModel::db($app->db()); // register global db
+$app->get('/model/:name*', function($name, scratchApp $app) {
+    $user = scratchModelUser::byName($name)->pdo($app);
 
-    $user = scratchModelUser::byName('Hans');
-
-    $app->render('hello', array(
-        'bar' => $bar,
-        'param' => $param,
+    $app->render('model', array(
+        'name' => $name,
         'user' => $user
     ));
 //    $app->stop(); // might $app->finish() / ->halt() / ->continue()

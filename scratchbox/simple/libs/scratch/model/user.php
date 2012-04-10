@@ -7,6 +7,7 @@ class scratchModelUser extends scratchModel {
         'name' => 'loadByName'
     );
 */
+
     static protected $properties = array('idx', 'name', 'age', 'quote');
     static protected $modifier = array(
         'idx' => scratchModel::TYPE_INT,
@@ -21,7 +22,9 @@ class scratchModelUser extends scratchModel {
     }
 
     protected function loadProp($prop) {
-        if (($values = scratchModel::db()->query('SELECT idx, name, age, quote FROM users WHERE ' . $this->_key . '=?', $this->_keyVal)->map())) {
+        if (($values = $this->pdo()->prepare('SELECT idx, name, age, quote FROM users WHERE ' . $this->_key . '=?')
+                                   ->execute($this->_keyVal)
+                                   ->map())) {
             $this->applyValues($values);
             return true;
         }
@@ -34,5 +37,3 @@ class scratchModelUser extends scratchModel {
     }
 
 }
-
-?>

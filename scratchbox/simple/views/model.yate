@@ -1,8 +1,8 @@
+{{ array(1,(object)array('foo' => 'bar'),3.175) | dump }}
 <h2>Hello template</h2>
 
 <ul>
-<li>bar = {{ bar | dump }}</li>
-<li>param = {{ param | dump }}</li>
+<li>name = {{ name | dump }}</li>
 <li>user: #{{ user->idx }} {{ user->name }} ({{ user->age }})</li>
 </ul>
 
