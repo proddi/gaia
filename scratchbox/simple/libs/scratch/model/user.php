@@ -26,6 +26,7 @@ class scratchModelUser extends scratchModel {
                                    ->execute($this->_keyVal)
                                    ->map())) {
             $this->applyValues($values);
+            $this->key('idx');  //force idx to primary key
             return true;
         }
     }

@@ -6,8 +6,6 @@
  * Time: 10:21 PM
  */
 
-//TODO: attribute per option array
-//TODO: form __toString() soll komplette Form ausgeben {{ form }}
 //TODO: Form example erstellen + alle forms in scratchBox löschen
 
 
@@ -82,10 +80,16 @@ abstract class scratchAppFormAbstract {
         }
     }
 
+    /**
+     * render the whole input element
+     *
+     * @return string
+     */
     public function __toString() {
-        return '<div class="field">'
+        return '<div class="field'. ($this->errors ? ' error' : '') .'">'
                     . ($this->label ? '<label for="'. $this->id .'">'. $this->label .'</label>' : '')
                     . $this->markup()
+                    . ($this->errors ? '<span class="error">'. implode(PHP_EOL, $this->errors) .'</span>' : '')
                 .'</div>';
     }
 

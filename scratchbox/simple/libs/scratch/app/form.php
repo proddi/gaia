@@ -55,8 +55,19 @@ class scratchAppForm implements Iterator {
         }
     }
 
+    /**
+     * render the whole form with all inputs
+     *
+     * @return string
+     */
     public function __toString() {
-        return '[a form "' . $this->name .'"]';
+        $markup = $this->begin.PHP_EOL;
+        foreach($this->_fields as $input) {
+            $markup .= $input->__toString().PHP_EOL;
+        }
+        $markup .= $this->end.PHP_EOL;
+
+        return $markup;
     }
 
     public function add(scratchAppFormAbstract $input) {
