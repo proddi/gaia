@@ -6,6 +6,7 @@ class campusControllerDocs {
         $controller = new static();
         $app->get('/:pageId', array($controller, 'get'));
         $app->get('/:pageId/edit', array($controller, 'edit'));
+        $app->get('/:pageId/new', array($controller, 'create'));
         $app();
 
         $baseUri = $app->request()->baseUrl();
@@ -21,31 +22,34 @@ class campusControllerDocs {
 
     public function get($pageId, scratchApp $app) {
         $page = campusModelPage::byPageId($pageId)->pdo($app);
-//        if (!$page->exists()) {
-//            $app->render('page-new', array(
-//                'page' => $page,
-//                'pageText' => static::wikiFilter($page->text),
-//                'baseUrl' => $app->request()->baseUrl()
-//            ));
-//        } else {
+        if ($page->exists()) {
             $app->render('page', array(
                 'page' => $page,
                 'pageText' => static::wikiFilter($page->text),
                 'baseUrl' => $app->request()->baseUrl()
             ));
-//        }
+        } else {
+            $app->render('page-new', array(
+                'page' => $page,
+                'baseUrl' => $app->request()->baseUrl()
+            ));
+        }
     }
 
     public function edit($pageId, scratchApp $app) {
         $page = campusModelPage::byPageId($pageId)->pdo($app);
 
         $form = $app->form('content',
+            scratchAppForm::text('title', array('value' => $page->title))
+                ->label('Page title')
+                ->validate(gaiaForm::validateRequired('The field can not be emtpy.')),
             scratchAppForm::textarea('text', array('value' => $page->text))
-                ->label('Type a Entry')
+                ->label('Content (later markdown markup)')
                 ->validate(gaiaForm::validateRequired('The field can not be emtpy.')),
             scratchAppForm::submit('submit', array('value' => 'absenden'))
         )->onValid(function($form, $app) use (&$page) {
             $page->text = $form->text->value;
+            $page->title = $form->title->value;
             $page->save();
             $app->response()->redirect($app->request()->baseUrl() . '/../');
             $app->stop();
@@ -57,45 +61,16 @@ class campusControllerDocs {
         ));
     }
 
-
-
-
-
-
-
-
-
-
-    // filters
-    protected function patchFilters() {
-        $cfg = gaiaView::view()->config();
-        $cfg['filters']->wiki = function($data) {
-            $res = '';
-            $format = '';
-            $currFormat = '';
-            $closeHtml = '';
-            foreach (explode("\n", $data) as $line) {
-                if ('    ' === substr($line, 0, 4)) {
-                    $format = 'code';
-                    $line = substr($line, 4);
-                } else $format = '';
-                  // apply format
-                if ($format === $currFormat) {
-                    $res .= htmlspecialchars($line) . "\n";
-                } else {
-                    $res .= $closeHtml . "\n";
-                    $closeHtml = '';
-                    switch ($format) {
-                        case 'code': $res .= '<pre class="sh_yate">' . htmlspecialchars($line) . "\n";
-                                     $closeHtml = '</pre>';
-                                     break;
-                        default: $res .= $line . "\n";
-                    }
-                    $currFormat = $format;
-                }
-            }
-            return $res . $closeHtml;
-        };
+    public function create($pageId, scratchApp $app) {
+        $page = campusModelPage::byPageId($pageId)->pdo($app);
+        if (!$page->exists()) {
+            $page->create();
+            $app->response()->redirect($app->request()->baseUrl() . '/../edit');
+            $app->stop();
+        } else {
+            $app->response()->redirect($app->request()->baseUrl() . '/../');
+            $app->stop();
+        }
     }
 
     static protected function wikiFilter($data) {

@@ -1,0 +1,4 @@
+<article>
+    <h2>{{ page->pageId }}</h2>
+    <div>This page doesn't exist but you can <a href="{{ baseUrl }}/new">create that page.</a></div>
+</article>

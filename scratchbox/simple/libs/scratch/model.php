@@ -55,7 +55,7 @@ abstract class scratchModel {
 
     public function __isset($prop) {
         $this->load($prop);
-        property_exists($this, $prop);
+        return property_exists($this, $prop);
     }
 
     protected $_loaded;
@@ -80,7 +80,9 @@ abstract class scratchModel {
 
     public function exists() {
         $exists = true;
-        foreach (static::$properties as $prop) $exists = $exists && isset($this->$prop);
+        foreach (static::$properties as $prop) {
+            $exists = $exists && isset($this->$prop);
+        }
         return $exists;
     }
 

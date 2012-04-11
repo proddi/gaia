@@ -15,11 +15,15 @@ class scratchAppMiddlewarePdo extends scratchAppMiddleware {
         /* if ($this->_config['exceptions'])*/ $this->_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $app->register('query', array($this, 'query'));
-        $app->register('prepare', array($this, 'query'));
+        $app->register('prepare', array($this, 'prepare'));
+        $app->register('lastInsertId', array($this->_pdo, 'lastInsertId'));
     }
 
     public function query() {
-        return new __pdostatementwrapper__(call_user_func_array(array($this->_pdo, __FUNCTION__), func_get_args()));
+        return new __pdostatementwrapper__(call_user_func_array(array($this->_pdo, 'query'), func_get_args()));
+    }
+    public function prepare() {
+        return new __pdostatementwrapper__(call_user_func_array(array($this->_pdo, 'prepare'), func_get_args()));
     }
 
 }

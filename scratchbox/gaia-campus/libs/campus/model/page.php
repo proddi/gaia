@@ -26,9 +26,17 @@ class campusModelPage extends scratchModel {
     }
 
     public function save() {
-//        $this->load();
         $this->pdo()->prepare('UPDATE pages SET title=?, content=? WHERE idx=?')
                     ->execute($this->title, $this->text, $this->idx);
+    }
+
+    public function create() {
+        // assume having pageId
+        $this->pdo()->prepare('INSERT INTO pages (pageId) VALUES ("'.$this->pageId.'")')
+                    ->execute();
+
+        $this->idx = $this->pdo()->lastInsertId();
+        $this->key('idx');
     }
 
 }
