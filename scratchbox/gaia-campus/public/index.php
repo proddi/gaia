@@ -1,30 +1,22 @@
 <?php
 
-//error_reporting(0);
-
 require_once('../../../libs/gaia.php');
+GAIA::registerNamespace('../../simple/libs/scratch', 'scratch');
 GAIA::registerNamespace('../libs/campus', 'campus');
 
-require_once 'config-dev.php';
+/* Middleware setup with custom functions: */
+$app = new scratchApp(array(
+    'pdo.dsn' => 'sqlite:../data/campus.sqlite'
+));
 
-//session_start();
+$app->use('scratchAppMiddlewareShortcuts');
+$app->use('scratchAppMiddlewarePdo');
+$app->use('scratchAppFormMiddleware');
+$app->use('scratchAppMiddlewareSession');
 
-gaiaServer::run(
-    gaiaServer::router(array(
-        '/docs/:pageId*' => campusServer::controller('campusControllerPage')
-    )),
+$app->get('/docs*', array('campusControllerDocs', 'map'))
+    ->name('docs');
+//$app->get('/docs/:pageId*', array('campusControllerPage', 'get'))
+//    ->name('docs');
 
-    function($req, $res) {
-        $baseUri = $req->getBaseUri();
-        $res->resource($baseUri . 'assets/style.css');
-        $res->resource($baseUri . 'assets/sh_style.css');
-        $res->resource($baseUri . 'assets/sh_main.js');
-        $res->resource($baseUri . 'assets/sh_yate.js');
-        $res->resource('sh_highlightDocument();');
-        $res->send(gaiaView::render('layout', array(
-            'content' => $res->content()
-        )));
-    }
-);
-
-?>
+$app();

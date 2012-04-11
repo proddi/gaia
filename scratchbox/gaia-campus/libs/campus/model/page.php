@@ -1,42 +1,34 @@
 <?php
 
-class campusModelPage extends gaiaModelAbstract {
+class campusModelPage extends scratchModel {
 
-    const BY_INDEX = 0x30;
-    const BY_PAGE_ID = 0x32;
+    static protected $properties = array('idx', 'pageId', 'title', 'text');
+    static protected $modifier = array(
+        'idx' => scratchModel::TYPE_INT,
+//        'age' => scratchModel::TYPE_INT
+    );
 
-    protected $__type;
-
-    protected $_idx;
-    protected $_pageId;
-    protected $_title;
-    protected $_text;
-
-    public function __construct($uid=null, $type=self::BY_INDEX) {
-        $this->uid = $uid;
-        $this->__type = $type;
+    static public function byIdx($idx) {
+        return new static($idx);
+    }
+    static public function byPageId($pageId) {
+        return new static($pageId, 'pageId');
     }
 
-    protected function __load($name = null) {
-        switch ($this->__type) {
-            case self::BY_PAGE_ID: $sqlWhere = 'pageID='.gaiaDb::quote($this->uid);
-                break;
-            default: $sqlWhere = 'idx=' . intval($this->uid);
-        }
-        if (!list($this->_idx, $this->_pageId, $this->_title, $this->_text) = gaiaDb::fetchRow('SELECT idx, pageId, title, content FROM pages WHERE ' . $sqlWhere)) {
-            throw new gaiaException('Page doesn\'t exists');
+    protected function loadProp($prop) {
+        if (($values = $this->pdo()->prepare('SELECT idx, pageId, title, content FROM pages WHERE ' . $this->_key . '=?')
+                                   ->execute($this->_keyVal)
+                                   ->map())) {
+            $this->applyValues($values);
+            $this->text = $this->content;
+            return true;
         }
     }
 
-    public function update() {
-        switch ($this->__type) {
-            case self::BY_PAGE_ID: $sqlWhere = 'pageID='.gaiaDb::quote($this->uid);
-                break;
-            default: $sqlWhere = 'idx=' . intval($this->uid);
-        }
-
-        gaiaDb::exec('UPDATE pages SET content='.gaiaDb::quote($this->_text).' WHERE '. $sqlWhere);
+    public function save() {
+//        $this->load();
+        $this->pdo()->prepare('UPDATE pages SET title=?, content=? WHERE idx=?')
+                    ->execute($this->title, $this->text, $this->idx);
     }
+
 }
-
-?>

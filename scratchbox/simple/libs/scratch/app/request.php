@@ -40,7 +40,7 @@ class scratchAppRequest {
     }
 
     public function post($key) {
-        return @$_POST[$key];
+        return @stripslashes($_POST[$key]);
     }
 
     public function headers() {}
