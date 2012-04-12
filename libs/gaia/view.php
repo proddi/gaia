@@ -73,7 +73,7 @@ class gaiaView {
                     return $preBlock . $markup . $postBlock;
                 }
                 if (is_object($var)) {
-                    $markup = $c('object('. get_class($var). ')#' . substr(spl_object_hash($var), 15, 8) .' {', 'blue') . "\n";
+                    $markup = $c('object('. get_class($var). ')#' . substr(spl_object_hash($var), 14, 8) .' {', 'blue') . "\n";
                     foreach (get_object_vars($var) as $key => $val) {
                         $markup .= $is . $id . $c($key, 'green') . ': ' . $dump($var->$key, false, $intend+1) . "\n";
                     }
