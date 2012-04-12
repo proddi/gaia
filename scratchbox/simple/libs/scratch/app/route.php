@@ -5,6 +5,7 @@ class scratchAppRoute {
     protected $_router;
     protected $path;
     protected $callable;
+    protected $_methods;
 
     public function __construct($router, $path, $callable) {
         $this->_router = $router;
@@ -13,6 +14,7 @@ class scratchAppRoute {
     }
 
     public function via($method) {
+        $this->_methods = func_get_args();
         return $this;
     }
 
@@ -21,7 +23,10 @@ class scratchAppRoute {
         return $this;
     }
 
-    public function dispatch($app) {
+    public function dispatch(scratchApp $app) {
+        if ($this->_methods && !in_array($app->request()->method(), $this->_methods)) {
+            return;
+        }
         $request = $app->request();
         $oldUrl = $request->url();
         $oldBaseUrl = $request->baseUrl();

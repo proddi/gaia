@@ -5,7 +5,8 @@ class campusControllerDocs {
     static public function map(scratchApp $app) {
         $controller = new static();
         $app->get('/:pageId', array($controller, 'get'));
-        $app->get('/:pageId/edit', array($controller, 'edit'));
+        $app->map('/:pageId/edit', array($controller, 'edit'))
+            ->via('GET', 'POST');
         $app->get('/:pageId/new', array($controller, 'create'));
         $app();
 

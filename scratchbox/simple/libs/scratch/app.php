@@ -144,8 +144,28 @@ class scratchApp {
         return $this->_view;
     }
 
+    public function map($path, $callable) {
+        return $this->router()->map($path, $callable);
+    }
+
     public function get($path, $callable) {
-        return $this->router()->map($path, $callable)->via('GET');
+        return $this->map($path, $callable)->via('GET');
+    }
+
+    public function post($path, $callable) {
+        return $this->map($path, $callable)->via('POST');
+    }
+
+    public function put($path, $callable) {
+        return $this->map($path, $callable)->via('PUT');
+    }
+
+    public function delete($path, $callable) {
+        return $this->map($path, $callable)->via('DELETE');
+    }
+
+    public function options($path, $callable) {
+        return $this->map($path, $callable)->via('OPTIONS');
     }
 
     public function on404($callable) {

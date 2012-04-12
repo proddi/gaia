@@ -32,8 +32,8 @@ class campusModelPage extends scratchModel {
 
     public function create() {
         // assume having pageId
-        $this->pdo()->prepare('INSERT INTO pages (pageId) VALUES ("'.$this->pageId.'")')
-                    ->execute();
+        $this->pdo()->prepare('INSERT INTO pages (pageId, title) VALUES (?, ?)')
+                    ->execute($this->pageId, ucfirst($this->pageId) . ' page');
 
         $this->idx = $this->pdo()->lastInsertId();
         $this->key('idx');

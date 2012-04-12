@@ -14,7 +14,7 @@ $app->use('scratchAppMiddlewarePdo');
 $app->use('scratchAppFormMiddleware');
 $app->use('scratchAppMiddlewareSession');
 
-$app->get('/docs*', array('campusControllerDocs', 'map'))
+$app->map('/docs*', array('campusControllerDocs', 'map'))
     ->name('docs');
 //$app->get('/docs/:pageId*', array('campusControllerPage', 'get'))
 //    ->name('docs');
