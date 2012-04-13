@@ -1,3 +1,0 @@
-<li{{ if value->errors }} style="border: 1px solid red"{{ end }}>
-{{ value }} <small>({{ value->name }})</small> {{ value->errors | join }}
-</li>

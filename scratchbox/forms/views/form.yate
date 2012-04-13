@@ -1,7 +1,0 @@
-{{ form->begin }}
-<ul>
-{{ for input in form }}
-    {{ input | partial('decorator') }}
-{{ end }}
-</ul>
-{{ form->end }}

@@ -1,5 +1,0 @@
-<div>COMMENTS:<br>{{ comments }}</div>
-<hr>
-<div style="width:50%;float:right">ADD NEW COMMENT AS ADMIN<br>{{ adminForm }}</div>
-<div style="width:50%">ADD NEW COMMENT AS GUEST<br>{{ guestForm }}</div>
-<a href="{{ baseUri }}clear">clear comments</a>
