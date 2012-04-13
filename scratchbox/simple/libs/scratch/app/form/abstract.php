@@ -8,7 +8,6 @@
 
 //TODO: Form example erstellen + alle forms in scratchBox löschen
 
-
 /**
  * abstract Input Class
  */
@@ -64,6 +63,17 @@ abstract class scratchAppFormAbstract {
             }
         }
         return $this->valid;
+    }
+
+    /**
+     * Filters the value during submit
+     * @param callable|string $filter
+     * @param mixed $parem
+     * @param string $message
+     * @return scratchAppFormAbstract
+     */
+    public function filter($filter, $parem = NULL) {
+        return $this;
     }
 
     // event handler to catch form events, no rendering at this point

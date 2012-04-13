@@ -47,6 +47,9 @@ class campusControllerDocs {
             scratchAppForm::textarea('text', array('value' => $page->text))
                 ->label('Content (later markdown markup)')
                 ->validate(gaiaForm::validateRequired('The field can not be emtpy.')),
+//            scratchAppForm::text('somenumber', array())
+//                ->label('Enter some number')
+//                ->filter('int'),
             scratchAppForm::submit('submit', array('value' => 'absenden'))
         )->onValid(function($form, $app) use (&$page) {
             $page->text = $form->text->value;
