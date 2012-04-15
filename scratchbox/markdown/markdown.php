@@ -1,116 +1,159 @@
 <?php
 
 /**
- * Description of markdown
+ * A markdown parser
+ *
+ * Syntax: http://daringfireball.net/projects/markdown/syntax
  *
  * @author proddi@splatterladder.com
  */
 class Markdown {
 
     static public function transform($markdown) {
-        $parser = new static();
-        return $parser->_transform($markdown);
+        $parser = new static($markdown);
+        return $parser->_transform2();
     }
 
-    static protected $_pattern = array(
-        'header' => array(
-            array(__CLASS__, 'headerParser'),
-            array(__CLASS__, 'headerMarkup')
-        ),
-        'code' => array(
-            array(__CLASS__, 'codeParser'),
-            array(__CLASS__, 'codeMarkup')
-        ),
-        'ul' => array(
-            array(__CLASS__, 'ulParser'),
-            array(__CLASS__, 'ulMarkup')
-        ),
-        'ol' => array(
-            array(__CLASS__, 'olParser'),
-            array(__CLASS__, 'olMarkup')
-        ),
-        'default' => array(
-            NULL,
-            array(__CLASS__, 'defaultMarkup')
-        )
+    static protected $_blockParsers = array(
+//        ''       => array(__CLASS__, 'defaultParser2'),
+        'header' => array(__CLASS__, 'headerParser'),
+        'code'   => array(__CLASS__, 'codeParser'),
+        'code2'   => array(__CLASS__, 'code2Parser'), // ``` ... ```
     );
 
-    protected function _transform($markdown) {
-        $lines = preg_split("/\r?\n/", $markdown);
-        $result = array();
-        $currentBlock = '';
-        $currentResult = array();
-        $parsers = static::$_pattern;
-        $data = (object) array(
-            'block' => ''
-        );
-        while (count($lines)) {
-            $line = array_shift($lines);
-            $data->line = $line; // new obj model
-            $parsed = NULL;
-            $block = NULL;
+    protected $_line;
+    protected $_lines = array();
 
-            // run current parser
-            if ($currentBlock && $parsers[$currentBlock][0]) {
-                if (!is_null($parsed = call_user_func($parsers[$currentBlock][0], $data, $line, $lines, $currentBlock))) {
-                    $block = $currentBlock;
-                };
+    protected $_block = '';
+
+    protected $_data = array();
+
+    public function __construct($markdown) {
+        $this->_lines = preg_split("/\r?\n/", $markdown);
+    }
+
+    protected function line() { return $this->_line; }
+
+    protected function lineAt($index) {
+        return count($this->_lines) <= $index ? '' : $this->_lines[$index];
+    }
+
+    public function block($block = '') {
+        if (func_num_args()) $this->_block = $block;
+        return $this->_block;
+    }
+
+    public function isBlock($block) {
+        return $block === $this->_block;
+    }
+
+    protected function data($item = NULL) {
+        if (func_num_args()) {
+            $this->_data[] = $item;
+        } else {
+            $data = $this->_data;
+            $this->_data = array();
+            return $data;
+        }
+    }
+
+    protected function isData() {
+        return count($this->_data) > 0;
+    }
+
+    protected function next() {
+        return NULL !== ($this->_line = array_shift($this->_lines));
+    }
+
+    protected $_content = '';
+    protected function write($data) { $this->_content .= $data . PHP_EOL; }
+    protected function _transform2() {
+        while ($this->next()) {
+            $matchedBlock = NULL;
+
+            // continue current block?
+            if ($this->block()) {
+                if (call_user_func(static::$_blockParsers[$this->block()], $this)) {
+                    $matchedBlock = $this->block();
+                }
             }
 
-            if (!$block) {
-                foreach ($parsers as $code => $parser) {
-                    if (($code === $currentBlock) || !$parser[0]) continue;
-                    if (!is_null($parsed = call_user_func($parser[0], $data, $line, $lines, $currentBlock))) {
-                        $block = $code;
+            // proceed other block parsers
+            if (!$matchedBlock) {
+                foreach (static::$_blockParsers as $block => $parser) {
+                    if ($this->isBlock($block)) continue; // already executed by continuing
+                    if (call_user_func($parser, $this)) {
+                        $matchedBlock = $this->block($block);
                         break;
                     }
                 }
             }
 
-            if (!$block) {
-                $block = 'default';
-                $parsed = $line;
+            // no parsers matched
+            if (!$matchedBlock) {
+//                static::$defaultParser($this);
+                $this->block('');
+                $this->write($this->line() . "<br>\n");
             }
-
-            if ($block !== $currentBlock) {
-                if ($currentBlock) {
-                    $result[] = call_user_func($parsers[$currentBlock][1], $data, $currentResult);
-                }
-                $currentResult = array();
-                $currentBlock = $block;
-            }
-            $currentResult[] = $parsed;
         }
-
-        return join("\n", $result);
+        echo $this->_content;
     }
 
-    static protected function headerParser($data, $line) {
-        if (preg_match('/(#+) (.*)/', $line, $matches)) {
+//    static protected function defaultParser(Markdown $md) {
+
+//    }
+    static protected function headerParser(Markdown $md) {
+        // # This is an H1 / ## This is an H2
+        if (preg_match('/(#+) (.*)/', $md->line(), $matches)) {
             $lvl = strlen($matches[1]);
-            return "<h$lvl>" . $matches[2] . "</h$lvl>";
+            $md->write("<h$lvl>" . $matches[2] . "</h$lvl>");
+            return true;
         }
     }
 
-    static protected function headerMarkup($data, $lines) {
-        return join("\n", $lines);
+    static protected function codeParser(Markdown $md) {
+        $code = NULL;
+        //     This is a code block.
+        if ('    ' === substr($md->line(), 0, 4)) {
+            $code = substr($md->line(), 4);
+        } else if ('' === $md->line()
+                && $md->isBlock('code')
+                && '    ' === substr($md->lineAt(0), 0, 4)) {
+            $code = '';
+        }
+
+        if (NULL !== $code) {
+            $md->data($code);
+            return true;
+        } else if ($md->isData()) {
+            $md->write('<pre><code>' . join(PHP_EOL, $md->data()) . '</code></pre>');
+        }
     }
 
-    static protected function codeParser($data, $line, $lines, $block) {
-        if ('    ' === substr($data->line, 0, 4)) {
-            return substr($data->line, 4);
+    static protected function code2Parser(Markdown $md) {
+        $code = NULL;
+        if (!$md->isBlock('code2')) {
+            if (preg_match('/^```(\w*)$/', $md->line(), $matches)) {
+                $code = $matches[1];
+            }
+        } else {
+            if ('```' !== $md->line()) {
+                $code = $md->line();
+            } else {
+            }
         }
-        if ('' === $data->line
-                && 'code' === $block
-                && count($lines) > 0
-                && '    ' === substr($lines[0], 0, 4)) {
-            return $data->line;
+
+        if (NULL !== $code) {
+            $md->data($code);
+            return true;
+        } else if ($md->isData()) {
+            $data = $md->data();
+            $lang = array_shift($data);
+            $md->write('<pre' . ($lang ? ' class="sh_' . $lang . '"' : '') . '><code>' . join(PHP_EOL, $data) . '</code></pre>');
         }
     }
 
-    static protected function codeMarkup($data, $lines) {
-        return '<pre><code>' . join("\n", $lines) . '</code></pre>';
-    }
+
 
     static protected function ulParser($data, $line, $lines, $block) {
         if (preg_match('/^\*\W+(.*)$/', $line, $matches)) {
@@ -135,18 +178,6 @@ class Markdown {
 
     static protected function olMarkup($data, $lines) {
         return "<ol>\n<li>" . join("</li>\n<li>", $lines) . "</li>\n</ol>";
-    }
-
-    static protected function defaultMarkup($data, $lines) {
-        return '<p>' . join("\n", $lines) . '</p>';
-    }
-
-}
-
-class __code__ {
-
-    public function test($line, &$lines) {
-        echo "code.test: " . $line . "<br>\n";
     }
 
 }

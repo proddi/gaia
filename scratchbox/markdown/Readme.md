@@ -1,5 +1,15 @@
 # Gaia - code less, create more!
 
+    require_once('../libs/gaia.php');
+
+    $app = new scratchApp();
+
+    $app->get('/hello/:name', function($name, scratchApp $app) {
+        $app->response()->send("Hello $name!");
+    });
+
+    $app();
+
 ```php
 require_once('../libs/gaia.php');
 
