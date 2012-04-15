@@ -5,9 +5,9 @@
 ```php
 require_once('../libs/gaia.php');
 
-$app = new scratchApp();
+$app = new gaiaApp();
 
-$app->get('/hello/:name', function($name, scratchApp $app) {
+$app->get('/hello/:name', function($name, gaiaApp $app) {
     $app->response()->send("Hello $name!");
 });
 

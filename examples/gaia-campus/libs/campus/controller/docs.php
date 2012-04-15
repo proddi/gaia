@@ -43,17 +43,17 @@ class campusControllerDocs {
         $page = campusModelPage::byPageId($pageId)->pdo($app);
 
         $form = $app->form('content',
-            scratchAppForm::text('title', array('value' => $page->title))
+            gaiaAppForm::text('title', array('value' => $page->title))
                 ->label('Page title')
                 ->validate(gaiaForm::validateRequired('The field can not be emtpy.')),
-            scratchAppForm::textarea('text', array('value' => $page->text))
+            gaiaAppForm::textarea('text', array('value' => $page->text))
                 ->label('Content (later markdown markup)')
                 ->validate(gaiaForm::validateRequired('The field can not be emtpy.')),
-//            scratchAppForm::text('somenumber', array())
+//            gaiaAppForm::text('somenumber', array())
 //                ->label('Enter some number')
 //                ->filter('int'),
-            scratchAppForm::submit('submit', array('value' => 'absenden'))
-        )->onValid(function($form, $app) use (&$page) {
+            gaiaAppForm::submit('submit', array('value' => 'absenden'))
+        )->onValid(function($form, gaiaApp $app) use (&$page) {
             $page->text = $form->text->value;
             $page->title = $form->title->value;
             $page->save();

@@ -1,2 +1,0 @@
-<h2>Foo template</h2>
-param "foo" = "{{ foo }}" (md5: {{ foo | md5 }})
