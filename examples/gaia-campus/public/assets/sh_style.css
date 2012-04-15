@@ -5,18 +5,18 @@ pre.sh_sourceCode {
   font-weight: normal;
 }
 
-pre.sh_sourceCode .sh_keyword { color: #FF8400; }         /* language keywords */
-pre.sh_sourceCode .sh_type { color: white; }                              /* basic types */
+pre.sh_sourceCode .sh_keyword { color: #FF8400; }                           /* language keywords */
+pre.sh_sourceCode .sh_type { color: white; }                                /* basic types */
 pre.sh_sourceCode .sh_usertype { color: teal; }                             /* user defined types */
-pre.sh_sourceCode .sh_string { color: #BDB; font-family: monospace; }        /* strings and chars */
+pre.sh_sourceCode .sh_string { color: #BDB; font-family: monospace; }       /* strings and chars */
 pre.sh_sourceCode .sh_regexp { color: orange; font-family: monospace; }     /* regular expressions */
 pre.sh_sourceCode .sh_specialchar { color: pink; font-family: monospace; }  /* e.g., \n, \t, \\ */
 pre.sh_sourceCode .sh_comment { color: brown; font-style: italic; }         /* comments */
 pre.sh_sourceCode .sh_number { color: purple; }                             /* literal numbers */
-pre.sh_sourceCode .sh_preproc { color: lightblue; font-weight: bold; }       /* e.g., #include, import */
+pre.sh_sourceCode .sh_preproc { color: lightblue; font-weight: bold; }      /* e.g., #include, import */
 pre.sh_sourceCode .sh_symbol { color: darkred; }                            /* e.g., <, >, + */
-pre.sh_sourceCode .sh_function { color: white; font-weight: bold; }         /* function calls and declarations */
-pre.sh_sourceCode .sh_cbracket { color: #999; }                              /* block brackets (e.g., {, }) */
+pre.sh_sourceCode .sh_function { color: white; }                            /* function calls and declarations */
+pre.sh_sourceCode .sh_cbracket { color: #999; }                             /* block brackets (e.g., {, }) */
 pre.sh_sourceCode .sh_todo { font-weight: bold; background-color: cyan; }   /* TODO and FIXME */
 
 /* Predefined variables and functions (for instance glsl) */
@@ -82,6 +82,9 @@ pre.sh_sourceCode {
     color: white;
     font-size: 14px;
     padding: .7em;
+}
+pre.sh_sourceCode code {
+        font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important;
 }
 
 pre.sh_sourceCode .sh_comment {
