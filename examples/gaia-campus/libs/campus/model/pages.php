@@ -10,7 +10,7 @@
  *
  * @author tosa
  */
-class campusModelPages extends scratchModelList {
+class campusModelPages extends gaiaModelList {
 
     static public function byParentIdx($parentIdx) {
         return new static($parentIdx, 'parentIdx');

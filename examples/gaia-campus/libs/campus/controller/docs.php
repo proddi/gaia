@@ -2,7 +2,7 @@
 
 class campusControllerDocs {
 
-    static public function map(scratchApp $app) {
+    static public function map(gaiaApp $app) {
         $controller = new static();
         $app->get('/:pageId', array($controller, 'get'));
         $app->map('/:pageId/edit', array($controller, 'edit'))
@@ -23,7 +23,7 @@ class campusControllerDocs {
         ));
     }
 
-    public function get($pageId, scratchApp $app) {
+    public function get($pageId, gaiaApp $app) {
         $page = campusModelPage::byPageId($pageId)->pdo($app);
         if ($page->exists()) {
             $app->render('page', array(
@@ -39,7 +39,7 @@ class campusControllerDocs {
         }
     }
 
-    public function edit($pageId, scratchApp $app) {
+    public function edit($pageId, gaiaApp $app) {
         $page = campusModelPage::byPageId($pageId)->pdo($app);
 
         $form = $app->form('content',
@@ -67,7 +67,7 @@ class campusControllerDocs {
         ));
     }
 
-    public function create($pageId, scratchApp $app) {
+    public function create($pageId, gaiaApp $app) {
         $page = campusModelPage::byPageId($pageId)->pdo($app);
         if (!$page->exists()) {
             $page->create();
@@ -79,7 +79,7 @@ class campusControllerDocs {
         }
     }
 
-    public function index(scratchApp $app) {
+    public function index(gaiaApp $app) {
         $pages = campusModelPages::byParentIdx(0)->pdo($app);
 
         $app->render('page-index', array(

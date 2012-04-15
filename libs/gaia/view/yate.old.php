@@ -12,13 +12,9 @@
  */
 class gaiaViewYate {
 
-    protected $data = array();
-//    protected $filters;
-
     protected $_rewriteFun;
     public function __construct(array $config = NULL) {
         $this->config($config);
-//        $this->filters = gaiaView::filters();
     }
 
     protected $_config = array();
@@ -49,9 +45,8 @@ class gaiaViewYate {
     public function render($template, array $values = array()) {
         $template = $this->_config['compiler']($this->_config, $template);
 
-        extract(array_merge($values, $this->data));
-        $__filters = $this->_config['filters'];
-
+        $v = (object)(empty($this->_config['values']) ? $values : array_merge($this->_config['values'], $values));
+        $filters = $this->_config['filters'];
         $that = $this; // for operations on the view e.g. partials
         ob_start();
         $res = eval('?>' . $template . '<?;');
@@ -98,15 +93,15 @@ class gaiaViewYate {
             foreach ($values as $filter) {
                 $filter = trim($filter);
                 if (($i = strpos($filter, '(')) !== false)
-                    $syntax = '$__filters->' . substr($filter, 0, $i + 1) . $syntax .', '. substr($filter, $i + 1);
+                    $syntax = '$filters->' . substr($filter, 0, $i + 1) . $syntax .', '. substr($filter, $i + 1);
                 else
-                    $syntax = '$__filters->'.$filter.'('.$syntax.')';
+                    $syntax = '$filters->'.$filter.'('.$syntax.')';
             }
             // object rewriting
             return preg_replace_callback('/(?:("|\')(.*?)\1|(?<![\$|>|\w])(([a-zA-Z][\w->]*)(?![\(|\w])))/', function($args) {
                 if (isset($args[3])) {
                     if (in_array($args[3], array('NULL', 'object'))) return $args[3];
-                    return '$' . $args[3];
+                    return '$v->' . $args[3];
                 }
                 return $args[1].$args[2].$args[1];
             }, $syntax);

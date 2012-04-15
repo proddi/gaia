@@ -1,10 +1,10 @@
 <?php
 
-class campusModelPage extends scratchModel {
+class campusModelPage extends gaiaModel {
 
     static protected $properties = array('idx', 'pageId', 'title', 'text');
     static protected $modifier = array(
-        'idx' => scratchModel::TYPE_INT,
+        'idx' => gaiaModel::TYPE_INT,
 //        'age' => scratchModel::TYPE_INT
     );
 

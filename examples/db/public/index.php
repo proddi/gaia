@@ -1,14 +1,13 @@
 <?php
 require_once('../../../libs/gaia.php');
-GAIA::registerNamespace('../../../scratchbox/simple/libs/scratch', 'scratch');
 
-$app = new scratchApp(array(
+$app = new gaiaApp(array(
     'pdo.dsn' => 'sqlite:../data/sqlite.sqlite'
 ));
 
-$app->use('scratchAppMiddlewarePdo');
+$app->use('gaiaAppMiddlewarePdo');
 
-$app->get('/', function(scratchApp $app) {
+$app->get('/', function(gaiaApp $app) {
     // simple query
     $sql = 'SELECT idx, name FROM users';
     $app->response()->send($app->view()->render('example', array(

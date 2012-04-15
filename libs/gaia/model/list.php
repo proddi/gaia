@@ -8,30 +8,22 @@
  * @author proddi@splatterladder.com
  * @abstract
  */
-abstract class gaiaModelList extends gaiaModelAbstract implements IteratorAggregate {
+abstract class gaiaModelList extends gaiaModel implements IteratorAggregate {
 
-	protected $__type;
-	protected $__items;
-	protected $__loaded = false;
-
-    public function __construct($uid=null, $type = 'default') {
-        $this->__type = $type;
-        parent::__construct($uid);
+    public function __construct($value, $key = 'idx') {
+        static::$keyLoader[$key] = 'loadBy' . ucfirst($key);
+        parent::__construct($value, $key);
     }
-
     /**
      * magic function, called by foreach
      * @return Iterator ArrayIterator An iterator with the loaded elements
      */
 	public function getIterator() {
-		if (!$this->__loaded) {
-			$this->__items = array();
-			$method = '__load' . ucfirst(strtolower($this->__type));
-//			echo $method."<br>\n";
-			$this->$method();
-			$this->__loaded = true;
-		}
-        return new ArrayIterator($this->__items);
+        return new ArrayIterator($this->load($this->_key));
+    }
+
+    protected function loadProp($prop) {
+        throw new Exception('Normal property load not implemented');
     }
 
 }
