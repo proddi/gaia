@@ -12,5 +12,4 @@ $app->get('/hello/:name', function($name, scratchApp $app) {
 });
 
 $app();
-
 ```

@@ -8,6 +8,7 @@ class campusControllerDocs {
         $app->map('/:pageId/edit', array($controller, 'edit'))
             ->via('GET', 'POST');
         $app->get('/:pageId/new', array($controller, 'create'));
+        $app->get('/', array($controller, 'index'));
         $app();
 
         $baseUri = $app->request()->baseUrl();
@@ -15,6 +16,7 @@ class campusControllerDocs {
         $app->response()->resource($baseUri . '/../assets/sh_style.css');
         $app->response()->resource($baseUri . '/../assets/sh_main.js');
         $app->response()->resource($baseUri . '/../assets/sh_yate.js');
+        $app->response()->resource($baseUri . '/../assets/sh_php.js');
         $app->response()->resource('sh_highlightDocument();');
         $app->render('layout', array(
             'content' => $app->response()->content()
@@ -26,7 +28,7 @@ class campusControllerDocs {
         if ($page->exists()) {
             $app->render('page', array(
                 'page' => $page,
-                'pageText' => static::wikiFilter($page->text),
+                'pageText' => campusMarkdown::transform($page->text),//static::wikiFilter($page->text),
                 'baseUrl' => $app->request()->baseUrl()
             ));
         } else {
@@ -77,31 +79,13 @@ class campusControllerDocs {
         }
     }
 
-    static protected function wikiFilter($data) {
-        $res = '';
-        $format = '';
-        $currFormat = '';
-        $closeHtml = '';
-        foreach (explode("\n", $data) as $line) {
-            if ('    ' === substr($line, 0, 4)) {
-                $format = 'code';
-                $line = substr($line, 4);
-            } else $format = '';
-              // apply format
-            if ($format === $currFormat) {
-                $res .= htmlspecialchars($line) . "\n";
-            } else {
-                $res .= $closeHtml . "\n";
-                $closeHtml = '';
-                switch ($format) {
-                    case 'code': $res .= '<pre class="sh_yate">' . htmlspecialchars($line) . "\n";
-                                 $closeHtml = '</pre>';
-                                 break;
-                    default: $res .= $line . "\n";
-                }
-                $currFormat = $format;
-            }
-        }
-        return $res . $closeHtml;
+    public function index(scratchApp $app) {
+        $pages = campusModelPages::byParentIdx(0)->pdo($app);
+
+        $app->render('page-index', array(
+            'pages' => $pages,
+            'baseUrl' => $app->request()->baseUrl()
+        ));
     }
+
 }

@@ -1,5 +1,7 @@
 # Gaia - code less, create more!
 
+Please don't use any `<blink>` tags (<http://example.com/>).
+For parsing **markdown** code use the `transform()` method. Might that method should have a better name like `toHtml()` or like this.
     require_once('../libs/gaia.php');
 
     $app = new scratchApp();
@@ -9,6 +11,7 @@
     });
 
     $app();
+
 
 ```php
 require_once('../libs/gaia.php');
@@ -20,8 +23,13 @@ $app->get('/hello/:name', function($name, scratchApp $app) {
 });
 
 $app();
-
 ```
+
+## view template engine
+```yate
+{{ form | decorator }}
+```
+
 
 *   foo
 *   bar

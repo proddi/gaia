@@ -18,7 +18,6 @@ class campusMarkdown {
 //        ''       => array(__CLASS__, 'defaultParser2'),
         'header' => array(__CLASS__, 'headerParser'),
         'code'   => array(__CLASS__, 'codeParser'),
-        'code2'   => array(__CLASS__, 'code2Parser'), // ``` ... ```
     );
 
     protected $_line;
@@ -93,7 +92,7 @@ class campusMarkdown {
             if (!$matchedBlock) {
 //                static::$defaultParser($this);
                 $this->block('');
-                $this->write(static::lineParser($this->line()) . "<br>\n");
+                $this->write('<p>' . static::lineParser($this->line()) . '</p>'. "\n");
             }
         }
         return $this->_content;
@@ -104,8 +103,21 @@ class campusMarkdown {
 //    }
 
     static protected function lineParser($line) {
-        $line = preg_replace_callback('/`(.*?)`/', function($matches) {
-            return '<code>' . htmlspecialchars($matches[1]) . '</code>';
+        $line = preg_replace_callback('/(`|``|\*\*|__|\*|_)(.*?)\1/', function($matches) {
+            $text = htmlspecialchars($matches[2]);
+            switch ($matches[1]) {
+                case '_':
+                case '*': return '<em>' . $text . '</em>';
+                case '__':
+                case '**': return '<strong>' . $text . '</strong>';
+                case '`': return '<code>' . $text . '</code>';
+                case '`': return '<p><code>' . $text . '</code></p>';
+            }
+        }, $line);
+        // link TODO: neews url scheme detection
+        $line = preg_replace_callback('/<(http|https|ftp|mailto):\/\/(.*?)>/', function($matches) {
+            $url = $matches[1] . '://' . $matches[2];
+            return '<a href="' . $url . '">' . $url . '</a>';
         }, $line);
         return $line;
     }
@@ -115,12 +127,13 @@ class campusMarkdown {
         if (preg_match('/(#+) (.*)/', $md->line(), $matches)) {
             $lvl = strlen($matches[1]);
             $md->write("<h$lvl>" . static::lineParser($matches[2]) . "</h$lvl>");
+            if (!$md->lineAt(0)) $md->next();
             return true;
         }
     }
 
-    // matches 4 spaces intend code blocks
     static protected function codeParser(self $md) {
+        // matches 4 spaces intend code blocks
         if ('    ' === substr($md->line(), 0, 4)) {
             $code = substr($md->line(), 4);
             while ($md->next()) {
@@ -135,10 +148,8 @@ class campusMarkdown {
             }
             return true;
         }
-    }
 
-    // matches code blocks in ```lang ... ```
-    static protected function code2Parser(self $md) {
+        // matches code blocks in ```lang ... ```
         if (preg_match('/^```(\w*)$/', $md->line(), $matches)) {
             $lang = $matches[1];
             $code = '';
@@ -151,6 +162,7 @@ class campusMarkdown {
             return true;
         }
     }
+
 /*
     static protected function ulParser($data, $line, $lines, $block) {
         if (preg_match('/^\*\W+(.*)$/', $line, $matches)) {

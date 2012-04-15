@@ -60,11 +60,12 @@ abstract class scratchModel {
 
     protected $_loaded;
     public function load($prop = NULL) {
-        if (!$this->_loaded) {
-            $this->_loaded = true;
+        if (!isset($this->_loaded)) {
             if (!($loader = @static::$keyLoader[$prop])) $loader = 'loadProp';
-            return $this->$loader($prop);
+            $this->_loaded = $this->$loader($prop);
+            if (!isset($this->_loaded)) $this->_loaded = true;
         }
+        return $this->_loaded;
     }
 
     abstract protected function loadProp($prop);

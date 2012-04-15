@@ -1,0 +1,5 @@
+<ul>
+{{ for page in pages }}
+  <li><a href="{{ baseUrl }}{{ page->pageId }}">{{ page->title }}</a></li>
+{{ end }}
+</ul>
