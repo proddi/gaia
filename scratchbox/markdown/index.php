@@ -1,7 +1,7 @@
 <link rel="stylesheet" type="text/css" href="style.css" />
 <?php
 
-require_once('../gaia-campus/libs/campus/markdown.php');
+require_once('../../examples/gaia-campus/libs/campus/markdown.php');
 //require_once 'Markdown_Parser.php';
 
 // $md = file_get_contents('syntax.md');
