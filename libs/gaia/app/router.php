@@ -42,7 +42,9 @@ class gaiaAppRouter extends gaiaAppMiddleware {
     public function __invoke($app, $stack) {
         $dispatched;
         foreach ($this->routes() as $route) {
-            if (($dispatched = $route->dispatch($app))) break;
+            try {
+                if (($dispatched = $route->dispatch($app))) break;
+            } catch (gaiaAppExceptionNext $e) {}
         }
         if (!$dispatched) {
             if (($callable = $this->_on404)) {

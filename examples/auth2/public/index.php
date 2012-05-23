@@ -3,6 +3,32 @@
 require_once('../../../libs/gaia.php');
 require_once('auth.php');
 
+$app = new gaiaApp();
+
+$app->use('gaiaAppMiddlewareSession');
+$app->use('authMiddleware');
+
+$app->map('/*', function(gaiaApp $app) {
+    $app->requireUser(); // force a logged user
+//    $app->user()->requireGroup(); // require a special group
+//    $app->user()->requireUser();  // require a special user
+    //
+//    $app->user()->name ....
+
+//    $app->response()->send('Valid user area (' . $app->user->name . ')');
+
+    $app->response()->resource('assets/style.css');
+    $app->response()->send($app->view()->render('layout', array(
+        'baseUrl' => $app->request()->baseUrl(),
+        'authorized' => true,
+        'user' => $app->user,
+        'res' => $app
+    )));
+});
+
+$app();
+exit;
+
 gaiaServer::run(
     array(
         // this chain needs a valid user

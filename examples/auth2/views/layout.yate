@@ -1,7 +1,7 @@
 <div class="pageheader">
 {{ if authorized }}
     <div style="float: right">
-        {{ user->name }} (<a href="{{ baseUri . 'logout' }}">logout</a>)
+        {{ user->name }} (<a href="{{ baseUrl . 'logout' }}">logout</a>)
     </div>
     <h2>auth example for user: {{ user->name }}</h2>
 {{ else }}
@@ -9,4 +9,4 @@
 {{ end }}
 </div>
 
-{{ res->content() }}
+{ { content } }

@@ -1,48 +1,67 @@
 <?php
 
-$validateUser = function($login, $pass, &$user) {
-    if (strlen($pass) < 4) {
-        return 'MÖÖÖÖÖÖP! Für dieses Beispiel musst du ein Password mit mindestens 4 Zeichen eingeben. Das Passwort ansichist egal. TolleSicherheit was?';
+class authMiddleware extends gaiaAppMiddleware {
+    public function __construct($app) {
+        parent::__construct($app);
+        $app->register('requireUser', array($this, 'requireUser'));
     }
-    $user = (object) array(
-        'name' => $login
-    );
-};
 
-function requireUser($validationFun, array $options = NULL) {
-    return function(&$req, &$res, &$data) use ($validationFun) {
-        session_start();
+    public function requireUser() {
+        $app = $this->_app;
+//        $app->use('forms');
+        $app->post('/login', array($this, 'loginAction'));
+        $app->get('/logout', array($this, 'logoutAction'));
+        $app->map('*', array($this, 'validateAction'));
+        $app();
+    }
 
-        if ('/logout' === $req->getUri()) {
-            unset($_SESSION['authenticated']);
-            unset($_SESSION['user']);
-            $res = new gaiaResponseRedirect($req->getBaseUri());
+    public function validateAction(gaiaApp $app) {
+        if ($app->session()->authenticated) {
+            $app->user = $app->session()->user;
             return;
         }
-        $error = '';
-        // is already authenticated ?
-        if (!empty($_SESSION['authenticated'])) {
-            $req->user = $_SESSION['user'];
-            return;
-        }
-        // is login request ?
-        if ($req->isPost() && '/login' === $req->getUri() && $_POST['login']) {
-            $error = $validationFun($_POST['login'], $_POST['password'], $user);
-            if (!$error) {
-                $_SESSION['user'] = $req->user = $user;
-                $_SESSION['authenticated'] = true;
-                $res = new gaiaResponseRedirect($req->getBaseUri());
-                return;
+
+        $app->response()->send($app->view()->render('login', array(
+            'baseUrl' => $app->request()->baseUrl(),
+            'login' => $app->request()->post('login'),
+            'error' => 'SOME ERROR'
+        )));
+        $app->stop();
+    }
+
+    public function loginAction(gaiaApp $app) {
+        var_dump('ACTION::'.__FUNCTION__);
+
+        $login = $app->request()->post('login');
+        $secret = $app->request()->post('secret');
+        if ($login) {
+            $response = call_user_func($this->validationFun, $login, $secret);
+            if (is_object($response)) {
+                $app->session()->authenticated = true;
+                $app->session()->user = $response;
+                $app->response()->redirect($app->request()->baseUrl().'/..');
+                $app->stop();
             }
         }
+        $app->next();
+    }
 
-        $res->send(gaiaView::render('login', array(
-            'baseUri' => $req->getBaseUri(),
-            'login' => isset($_POST['login']) ? $_POST['login'] : '',
-            'error' => $error
-        )));
-        return gaiaServer::BREAKCHAIN;
-    };
+    public function logoutAction(gaiaApp $app) {
+        var_dump('ACTION::'.__FUNCTION__);
+        $app->session()->authenticated = false;
+        $app->session()->user = NULL;
+        $app->response()->redirect($app->request()->baseUrl().'/..');
+        $app->stop();
+    }
+
+    protected $validationFun = array(__CLASS__, 'validateUser');
+
+    protected static function validateUser($login, $secret) {
+        if (strlen($secret) < 4) {
+            return 'MÖÖÖÖÖÖP! Für dieses Beispiel musst du ein Password mit mindestens 4 Zeichen eingeben. Das Passwort ansich ist egal. TolleSicherheit was?';
+        }
+        return (object) array(
+            'name' => $login
+        );
+    }
 }
-
-?>

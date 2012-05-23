@@ -35,7 +35,11 @@ class gaiaView {
         $url .= '/';
         $ext = '.' . $ext;
         return function($template) use ($url, $ext) {
-            $url = $url . $template . $ext;
+            if (preg_match('/^(?=(\w):\\|\/)/', $template)) {
+                $url = $template . $ext;
+            } else {
+                $url = $url . $template . $ext;
+            }
             $source = @file_get_contents($url);
             if (false === $source) throw new Exception('Unable to load view from file "' . $url . '"');
             return (false !== $source) ? $source : ('[unable to load view from "' . $url . '"]');

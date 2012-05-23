@@ -1,16 +1,16 @@
 <div style="width: 250px; margin: 150px auto; border: 5px solid #eee; background-color: #eee">
 <div style="border-top: 2px solid #bbb; border-bottom: 2px solid #bbb">
     <div class="header">Soo, jetzt wäre es echt angebracht mir zu verraten, wer du nun bist. Also ich höre...?</div>
-<? if ($v->error) echo '<div class="error" style="padding: 20px">' . $v->error .'</div>'; ?>
-    <form action="{{ baseUri }}login" method="post">
+{{ if error }}<div class="error" style="padding: 20px">{{ error }}</div>{{ end }}
+    <form action="{{ baseUrl }}/login" method="post">
     <label for="login_field">
         Login or Email<br />
         <input autocapitalize="off" class="text" id="login_field" name="login" style="width: 15em;" tabindex="1" type="text" value="{{ login }}" />
     </label>
-    <label for="password">
-        Password <a href="/sessions/forgot_password">(forgot password)</a>
+    <label for="secret">
+        Password <a href="/sessions/forgot_secret">(forgot password)</a>
         <br />
-        <input autocomplete="disabled" class="text" id="password" name="password" style="width: 15em;" tabindex="2" type="password" value="" />
+        <input autocomplete="disabled" class="text" id="secret" name="secret" style="width: 15em;" tabindex="2" type="password" value="" />
     </label>
     <label class='submit_btn'>
         <input name="commit" tabindex="3" type="submit" value="Log in" />

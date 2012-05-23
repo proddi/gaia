@@ -176,6 +176,10 @@ class gaiaApp {
         throw new gaiaAppExceptionStop();
     }
 
+    public function next() {
+        throw new gaiaAppExceptionNext();
+    }
+
 //    public function halt($status, $message) {
 //        $this->response()->status($status);
 //    }
@@ -225,3 +229,5 @@ class gaiaApp {
 }
 
 class gaiaAppExceptionStop extends Exception{}
+
+class gaiaAppExceptionNext extends Exception{}
