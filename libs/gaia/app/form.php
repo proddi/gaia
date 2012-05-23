@@ -118,6 +118,10 @@ class gaiaAppForm implements Iterator {
         return new gaiaAppFormTextarea($name, $cfg);
     }
 
+    static public function select($name, array $cfg = array()) {
+        return new gaiaAppFormSelect($name, $cfg);
+    }
+
     static public function submit($name, array $cfg = array()) {
         return new gaiaAppFormSubmit($name, $cfg);
     }
