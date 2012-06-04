@@ -6,16 +6,19 @@ require_once('auth.php');
 $app = new gaiaApp();
 
 $app->use('gaiaAppMiddlewareSession');
-$app->use('authMiddleware');
+$app->use('gaiaAppMiddlewareAuth', function($login, $secret) {
+    if (strlen($secret) < 4) {
+        return 'MÖÖÖÖÖÖP! Für dieses Beispiel musst du ein Password mit mindestens 4 Zeichen eingeben. Das Passwort ansich ist egal. TolleSicherheit was?';
+    }
+    return (object) array(
+        'name' => $login
+    );
+});
 
 $app->map('/*', function(gaiaApp $app) {
-    $app->requireUser(); // force a logged user
-//    $app->user()->requireGroup(); // require a special group
-//    $app->user()->requireUser();  // require a special user
-    //
-//    $app->user()->name ....
-
-//    $app->response()->send('Valid user area (' . $app->user->name . ')');
+    $app->requireUser('owner'); // force a logged user and check if it's an admin
+    $app->requireRole('consumer', 'conductor', 'strangeGuys'); // force a logged user and check if it's an admin
+    // or custom require function
 
     $app->response()->resource('assets/style.css');
     $app->response()->send($app->view()->render('layout', array(
@@ -27,32 +30,10 @@ $app->map('/*', function(gaiaApp $app) {
 });
 
 $app();
-exit;
 
-gaiaServer::run(
-    array(
-        // this chain needs a valid user
 
-        // show a login form if user hasn't logged in
-        requireUser($validateUser),
-
-        // now a user has logged in and ($req->user) is available (see $validateUser function)
-        function($req, $res) {
-            $res->send('Valid user area (' . $req->user->name . ')');
-        }
-    ),
-
-    // layout is for every request
-    function($req, &$res) {
-        $res->resource('assets/style.css');
-
-        $res->send(gaiaView::render('layout', array(
-            'baseUri' => $req->getBaseUri(),
-            'authorized' => !empty($req->user),
-            'user' => isset($req->user) ? $req->user : null,
-            'res' => $res
-        )));
-    }
-);
-
-?>
+/*
+    $app->requireUser();
+    if ($app->user()->name !== 'owner') throw new Exception();
+    $app->user()->isRole('role2');
+ */

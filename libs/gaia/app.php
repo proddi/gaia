@@ -70,9 +70,9 @@ class gaiaApp {
      * Register middleware
      * @param string|gaiaAppMiddleware $mixin
      */
-    public function middleware($mixin) {
+    public function middleware($mixin, $options = NULL) {
         if (is_string($mixin)) {
-            $mixin = new $mixin($this);
+            $mixin = new $mixin($this, $options);
         }
         $this->_mixins[] = $mixin;
     }
