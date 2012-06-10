@@ -70,6 +70,7 @@ abstract class gaiaModel {
 
     abstract protected function loadProp($prop);
 
+    // TODO: calling inside loadProp triggers a sql query for every property because of isset()
     protected function applyValues(array $values) {
         foreach ($values as $key => $val) {
             if (!isset($this->$key)) {
