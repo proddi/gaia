@@ -193,6 +193,7 @@ class gaiaApp {
 
     public function __invoke() {
         $after = $this->_after;
+        $this->_after = NULL;
 
         if ($this->_invokeLevel++) {
             try {
