@@ -172,6 +172,11 @@ class gaiaApp {
         return $this->router()->on404($callable);
     }
 
+    protected $_after;
+    public function after($callable) {
+        $this->_after = $callable;
+    }
+
     public function stop() {
         throw new gaiaAppExceptionStop();
     }
@@ -187,6 +192,8 @@ class gaiaApp {
     protected $_invokeLevel = 0;
 
     public function __invoke() {
+        $after = $this->_after;
+
         if ($this->_invokeLevel++) {
             try {
                 $mw = $this->router();
@@ -212,6 +219,9 @@ class gaiaApp {
     //            $res->title('gaiaApp application error');
                 $res->send(self::generateErrorMarkup($e));
             }
+
+            if ($after) call_user_func ($after, $this);
+
             $this->response()->streamOut();
         }
         $this->_invokeLevel--;

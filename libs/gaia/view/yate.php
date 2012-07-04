@@ -130,7 +130,9 @@ class gaiaViewYate {
             '/^\s*do (.*)/' => function($rewriter, $expression) {
                     return $rewriter($expression);
                 },
-            'partial' => function() { return 'echo "[[partials currently not supported]]"'; },
+            '/^partial (.*)\s*$/' => function($rewriter, $template) {
+                    return 'echo "[[partials currently not supported]]"';
+                },
         );
     }
 }
