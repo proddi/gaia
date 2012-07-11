@@ -95,7 +95,7 @@ class gaiaView {
             'link' => function($str, $title) { return '<a href="' . $str . '">' . $title . '</a>'; },
             'default' => function($str, $default) { return empty($str) ? $default : $str; },
             'slice' => function($arr, $offset = NULL, $length = NULL) { return array_slice($arr, $offset, $length); },
-            'date' => function($time, $format) { return date($format, $time); },
+            'date' => function($time, $format = '%x') { return strftime($format, $time); },
             'partial' => function($input, $template, array $values = array()) {
                 return gaiaView::render($template, array_merge($values, array('value' => $input)));
              }
