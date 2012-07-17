@@ -31,6 +31,10 @@ class gaiaAppRequest {
         return 'GET' === $this->_method;
     }
 
+    public function get($key) {
+        return @stripslashes($_GET[$key]);
+    }
+
     /**
      * Is this a POST request?
      * @return bool
