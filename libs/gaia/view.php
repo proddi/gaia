@@ -48,6 +48,7 @@ class gaiaView {
 
     public static function filters() {
         $dump;
+        // https://docs.djangoproject.com/en/dev/ref/templates/builtins/#ref-templates-builtins-filters
         return new gaiaInvokable(array(
             'capitalize' => function($str) { return ucwords(strtolower($str)); },
             'truncate' => function($limit, $str) { if (strlen($str) <= $limit) return $str; return substr($str, 0, $limit - 3) . '...'; },
@@ -95,10 +96,30 @@ class gaiaView {
             'link' => function($str, $title) { return '<a href="' . $str . '">' . $title . '</a>'; },
             'default' => function($str, $default) { return empty($str) ? $default : $str; },
             'slice' => function($arr, $offset = NULL, $length = NULL) { return array_slice($arr, $offset, $length); },
-            'date' => function($time, $format = '%x') { return strftime($format, $time); },
+            'date' => function($time, $format = '%d.%m.%Y') { return strftime($format, $time); },
+            'timedelta' => function($time) {
+                $delta = time() - $time;
+                $str;
+                if (abs($delta)<60) $str = 'Jetzt';
+                else {
+                    $str = $delta < 0 ? 'in ' : 'vor ';
+                    $delta = abs($delta);
+                    if ($delta < 100) $str .= $delta . ' Sekunden';
+                    else if ($delta < 6000) $str .= round($delta / 60) . ' Minuten';
+                    else if ($delta < 6000 * 30) $str .= round($delta / 60 / 60) . ' Stunden';
+                    else $str .= round($delta / 60 / 60 / 24) . ' Tagen';
+                }
+                return '<abbr title="' . strftime('%A, %d. %B %Y um %H:%M', $time).'">' . $str . '</abbr>';
+            },
             'partial' => function($input, $template, array $values = array()) {
                 return gaiaView::render($template, array_merge($values, array('value' => $input)));
-             }
+             },
+            'linebreaks' => function($str) { return str_replace("\n", '<br />', $str); },
+            'pluralize' => function($num, $sl=NULL, $pl=NULL) {
+                if (NULL === $pl) { $pl = $sl; $sl = ""; }
+                if (NULL === $pl) { $pl = "s"; }
+                return 1 === $num ? $sl : $pl;
+            }
         ));
     }
 }
