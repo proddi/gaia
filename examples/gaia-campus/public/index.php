@@ -17,5 +17,6 @@ $app->map('/docs*', array('campusControllerDocs', 'map'))
     ->name('docs');
 //$app->get('/docs/:pageId*', array('campusControllerPage', 'get'))
 //    ->name('docs');
+$app->get('/', function(gaiaApp $app) { $app->response()->redirect($app->request()->baseUrl() . 'docs'); });
 
 $app();
