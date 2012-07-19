@@ -172,6 +172,11 @@ class gaiaApp {
         return $this->router()->on404($callable);
     }
 
+    protected $_before;
+    public function before($callable) {
+        $this->_before = $callable;
+    }
+
     protected $_after;
     public function after($callable) {
         $this->_after = $callable;
@@ -192,10 +197,13 @@ class gaiaApp {
     protected $_invokeLevel = 0;
 
     public function __invoke() {
+        $before = $this->_before;
+        $this->_before = NULL;
         $after = $this->_after;
         $this->_after = NULL;
 
         if ($this->_invokeLevel++) {
+            // embedded execution
             try {
                 $mw = $this->router();
                 $this->_router = NULL; // reset for embeddet app() calls
@@ -206,12 +214,16 @@ class gaiaApp {
             }
         } else {
             try {
+                if ($before) call_user_func($before, $this);
+
                 $mixins = $this->_mixins;
                 $mixins[] = $this->router();
                 $this->_router = NULL; // reset for embeddet app() calls
 
                 $callable = array_shift($mixins);
                 $callable($this, $mixins);
+
+                if ($after) call_user_func($after, $this);
             } catch (gaiaAppExceptionStop $e) {
 
             } catch (Exception $e) {
@@ -220,8 +232,6 @@ class gaiaApp {
     //            $res->title('gaiaApp application error');
                 $res->send(self::generateErrorMarkup($e));
             }
-
-            if ($after) call_user_func ($after, $this);
 
             $this->response()->streamOut();
         }
