@@ -29,6 +29,11 @@ class gaiaViewYate {
         return $this->_config;
     }
 
+    public function filters() {
+        $cfg = $this->config();
+        return $cfg['filters'];
+    }
+
     // returns the default config (also static)
     public function defaultConfig() {
         return array(

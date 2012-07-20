@@ -63,6 +63,10 @@ class gaiaAppRequest {
         return $_SERVER['REQUEST_URI'];
     }
 
+    public function isAjax() {
+        return (isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+                ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'));
+    }
     /**
      * Returns true if its an request from a mobile browser otherweise false.
      * Thanks to: http://detectmobilebrowsers.com/
