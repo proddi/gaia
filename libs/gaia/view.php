@@ -46,12 +46,12 @@ class gaiaView {
         };
     }
 
-    public static function filters() {
+    public static function filters(gaiaViewYate $view) {
         $dump;
         // https://docs.djangoproject.com/en/dev/ref/templates/builtins/#ref-templates-builtins-filters
         return new gaiaInvokable(array(
             'capitalize' => function($str) { return ucwords(strtolower($str)); },
-            'truncate' => function($limit, $str) { if (strlen($str) <= $limit) return $str; return substr($str, 0, $limit - 3) . '...'; },
+            'truncate' => function($str, $limit) { if (strlen($str) <= $limit) return $str; return substr($str, 0, $limit - 3) . '...'; },
             'join' => function($arr, $glue = ', ') { return implode($glue, $arr); },
             'explode' => function($arr, $glue = ', ') { return explode($glue, $arr); },
             'first' => function($arr) { return $arr[0]; },
@@ -111,9 +111,9 @@ class gaiaView {
                 }
                 return '<abbr title="' . strftime('%A, %d. %B %Y um %H:%M', $time).'">' . $str . '</abbr>';
             },
-            'partial' => function($input, $template, array $values = array()) {
-                return gaiaView::render($template, array_merge($values, array('value' => $input)));
-             },
+            'partial' => function($template, array $values = array()) use ($view) {
+                return $view->render($template, $values);
+            },
             'linebreaks' => function($str) { return str_replace("\n", '<br />', $str); },
             'pluralize' => function($num, $sl=NULL, $pl=NULL) {
                 if (NULL === $pl) { $pl = $sl; $sl = ""; }

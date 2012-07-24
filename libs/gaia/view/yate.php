@@ -40,7 +40,7 @@ class gaiaViewYate {
             'compiler' => self::compiler(),
             'parser'   => self::parser(),
             'source'   => gaiaView::fileSource('../views', 'yate'),
-            'filters'  => gaiaView::filters(),
+            'filters'  => gaiaView::filters($this),
             'tags'     => self::tags()
         );
     }
