@@ -5,10 +5,10 @@ class gaiaAppResponseAjax extends gaiaAppResponse {
     public function streamOut() {
         echo json_encode((object)array(
             'title' => $this->title,
-            'content' => $this->content(),
+            'content' => '' . $this->content(),
             'resources' => (object)array(
-                'js.header' => $this->_resources[$this::jsHeader],
-                'css.header' => $this->_resources[$this::cssHeader]
+//                'js.header' => $this->_resources[$this::jsHeader],
+//                'css.header' => $this->_resources[$this::cssHeader]
             )
         ));
         return;

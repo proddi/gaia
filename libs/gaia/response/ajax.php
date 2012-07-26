@@ -21,7 +21,7 @@ class gaiaResponseAjax extends gaiaResponseAbstract {
 //  }
 
     public function streamOut() {
-        $json = array('content' => $this->_content);
+        $json = array('content' => ''.$this->_content);
 //        if ($this->_jsInline) $json['script'] = array_unique($this->_jsInline);
         echo json_encode($json);
     }
