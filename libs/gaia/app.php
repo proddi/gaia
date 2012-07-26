@@ -179,7 +179,7 @@ class gaiaApp {
 
     protected $_after;
     public function after($callable) {
-        $this->_after = $callable;
+        return $this->_after = new gaiaAppRoute(NULL, '', $callable);
     }
 
     public function stop() {
@@ -223,7 +223,7 @@ class gaiaApp {
                 $callable = array_shift($mixins);
                 $callable($this, $mixins);
 
-                if ($after) call_user_func($after, $this);
+                if ($after) $after->execute($this);
             } catch (gaiaAppExceptionStop $e) {
 
             } catch (Exception $e) {

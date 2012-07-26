@@ -44,7 +44,7 @@ class gaiaAppRoute {
         return $this;
     }
 
-    public function dispatch($app) {
+    public function dispatch(gaiaApp $app) {
         if ($this->_methods && !in_array($app->request()->method(), $this->_methods)) {
             return;
         }
@@ -68,9 +68,7 @@ class gaiaAppRoute {
             $args[] = $app;
 
             // check conditions
-            $ok = true;
-            foreach ($this->_conditions as $condition) $ok &= call_user_func($condition);
-            if (!$ok) return false; // not valid
+            foreach ($this->_conditions as $condition) if (!call_user_func($condition)) return false; // not valid
 
 //            echo "->" . $request->baseUrl() . "<br>\n";
 //            echo "->" . $request->url() . "<br>\n";
@@ -89,6 +87,16 @@ class gaiaAppRoute {
             return true;
         }
         return false; // $app->finished();
+    }
+
+    public function execute(gaiaApp $app) {
+        // check conditions
+        foreach ($this->_conditions as $condition) if (!call_user_func($condition, $app)) return false; // not valid
+
+        $args = array($app);
+        // execute callable
+        call_user_func_array($this->callable, $args);
+        return true;
     }
 
     public function url() {
