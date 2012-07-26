@@ -8,6 +8,7 @@
 
 class gaiaAppFormText extends gaiaAppFormAbstract {
     public function markup() {
-        return '<input type="text" class="text" name="' . $this->name . '" id="' . $this->id . '" value="' . $this->value . '" />';
+        $placeholder = isset($this->placeholder) ? ' placeholder="' . htmlspecialchars($this->placeholder) . '"' : '';
+        return '<input type="text" class="text" name="' . $this->name . '" id="' . $this->id . '" value="' . htmlspecialchars($this->value) . '"' . $placeholder . ' />';
     }
 }

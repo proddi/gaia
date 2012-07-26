@@ -8,6 +8,7 @@
 
 class gaiaAppFormTextarea extends gaiaAppFormAbstract {
     public function markup() {
-        return '<textarea class="text" name="' . $this->name . '" id="' . $this->id . '">' . $this->value . '</textarea>';
+        $placeholder = isset($this->placeholder) ? ' placeholder="' . htmlspecialchars($this->placeholder) . '"' : '';
+        return '<textarea class="text" name="' . $this->name . '" id="' . $this->id . '"' . $placeholder . '>' . $this->value . '</textarea>';
     }
 }
