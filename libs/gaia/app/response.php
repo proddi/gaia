@@ -32,6 +32,11 @@ class gaiaAppResponse {
         return $data;
     }
 
+    public function title($title = NULL) {
+        if (isset($title)) $this->title = $title;
+        return $this->title;
+    }
+
     public function clear() {
         $this->content = array();
     }
