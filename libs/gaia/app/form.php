@@ -126,4 +126,8 @@ class gaiaAppForm implements Iterator {
         return new gaiaAppFormSubmit($name, $cfg);
     }
 
+    static public function dropzone($name, array $cfg = array()) {
+        return new gaiaAppFormDropzone($name, $cfg);
+    }
+
 }
