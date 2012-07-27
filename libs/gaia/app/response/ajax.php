@@ -7,8 +7,10 @@ class gaiaAppResponseAjax extends gaiaAppResponse {
             'title' => $this->title,
             'content' => '' . $this->content(),
             'resources' => (object)array(
-//                'js.header' => $this->_resources[$this::jsHeader],
-//                'css.header' => $this->_resources[$this::cssHeader]
+                'js.header' => array_key_exists($this::jsHeader, $this->_resources) ? $this->_resources[$this::jsHeader] : NULL,
+                'js.inline' => array_key_exists($this::jsInline, $this->_resources) ? $this->_resources[$this::jsInline] : NULL,
+                'css.header' => array_key_exists($this::cssHeader, $this->_resources) ? $this->_resources[$this::cssHeader] : NULL,
+                'css.inline' => array_key_exists($this::cssInline, $this->_resources) ? $this->_resources[$this::cssInline] : NULL,
             )
         ));
         return;
