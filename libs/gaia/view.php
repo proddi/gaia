@@ -114,7 +114,7 @@ class gaiaView {
             'partial' => function($template, array $values = array()) use ($view) {
                 return $view->render($template, $values);
             },
-            'linebreaks' => function($str) { return str_replace("\n", '<br />', $str); },
+            'text' => function($str) { return str_replace("\n", '<br />', $str); },
             'pluralize' => function($num, $sl=NULL, $pl=NULL) {
                 if (NULL === $pl) { $pl = $sl; $sl = ""; }
                 if (NULL === $pl) { $pl = "s"; }
