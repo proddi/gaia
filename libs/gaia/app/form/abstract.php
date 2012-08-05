@@ -19,6 +19,7 @@ abstract class gaiaAppFormAbstract {
     public $valid;
     public $errors  = array();
     public $form;
+    protected $_focused = false;
 
     /**
      * @param $name
@@ -44,6 +45,11 @@ abstract class gaiaAppFormAbstract {
 
     public function label($label) {
         $this->label = $label;
+        return $this;
+    }
+
+    public function focus() {
+        $this->_focused = true;
         return $this;
     }
 
