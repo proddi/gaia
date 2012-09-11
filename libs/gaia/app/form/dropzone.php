@@ -8,6 +8,10 @@
 
 class gaiaAppFormDropzone extends gaiaAppFormAbstract {
     public function markup() {
-        return '<div style="background-color: #EEE; padding: 30px; text-align: center;">file drop zone (not working yet)</div>';
+        $html = '<div id="dropbox">'.PHP_EOL;
+        $html .= '<span class="message">file drop zone <br /><i>(not working yet)</i></span>'.PHP_EOL;
+        $html .= '</div>'.PHP_EOL;
+
+        return $html;
     }
 }
