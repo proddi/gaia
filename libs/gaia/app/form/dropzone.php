@@ -14,4 +14,12 @@ class gaiaAppFormDropzone extends gaiaAppFormAbstract {
 
         return $html;
     }
+
+    // event handler to catch form events, no rendering at this point
+    public function proceed($app) {
+        if ($this->form->isSubmit()) {
+            $this->value = $app->session()->foofiles;
+        }
+    }
+
 }
