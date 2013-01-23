@@ -130,4 +130,8 @@ class gaiaAppForm implements Iterator {
         return new gaiaAppFormDropzone($name, $cfg);
     }
 
+    static public function autocomplete($name, array $cfg = array()) {
+        return new gaiaAppFormAutocomplete($name, $cfg);
+    }
+
 }
