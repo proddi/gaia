@@ -62,7 +62,7 @@ abstract class gaiaAppFormAbstract {
     public function validateNow() {
         $this->valid = true;
         foreach ($this->_validators as $cb) {
-            $error = $cb($this->value);
+            $error = $cb($this->value, $this);
             if (is_string($error)) {
                 $this->valid = false;
                 $this->errors[] = $error;
