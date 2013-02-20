@@ -30,6 +30,10 @@ abstract class gaiaAppFormAbstract {
         foreach ($cfg as $key => $value) { $this->$key = $value; }
     }
 
+    static public function create($name, array $cfg = array()) {
+        return new static($name, $cfg);
+    }
+
     /**
      * call in form::add()
      * @param form|null $form
